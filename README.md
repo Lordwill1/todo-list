@@ -9,7 +9,6 @@
 
 #### This web page is hosted [here!](https://tusharjustdoit.netlify.app/)
 
-- View the local installation in the [CONTRUBUTING.md](https://github.com/tusharnankani/ToDoList/blob/master/CONTRIBUTING.md).
 
 ### *Features*:
 
