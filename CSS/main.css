@@ -375,6 +375,6 @@ form button {
         width: 50%;
     }
     form > button.light-button {
-        box-shadow: 0 0 5px lightgray;
+        box-shadow: 0 0 5px lighgray;
     }
 }
