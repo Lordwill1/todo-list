@@ -268,6 +268,24 @@ form button {
     transition: background-color 200ms ease-in-out;
 }
 
+.due-date-text {
+    font-size: 14px;
+    color: #666;
+    margin-left: 10px;
+}
+
+    .due-date-text.highlight {
+        color: red;
+    }
+
+.todo.delayed {
+    background-color: #ffcccb; /* 지연된 할 일 배경색 */
+    border: 1px solid red;
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+
 /* Items themes */
 .standard-todo {
     background-color: rgb(26, 27, 27);
