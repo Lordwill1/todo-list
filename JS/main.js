@@ -25,6 +25,7 @@ savedTheme === null ?
 
 // Functions;
 function addToDo(event) {
+    // add task branch has been implemented 
     // Prevents form from submitting / Prevents form from relaoding;
     event.preventDefault();
 
