@@ -23,8 +23,10 @@ savedTheme === null ?
     changeTheme('standard')
     : changeTheme(localStorage.getItem('savedTheme'));
 
+  
 // Functions;
 function addToDo(event) {
+    // add task feature has been implemented
     // Prevents form from submitting / Prevents form from relaoding;
     event.preventDefault();
 
@@ -64,8 +66,7 @@ function addToDo(event) {
         toDoInput.value = '';
     }
 
-}   
-
+} 
 
 function deletecheck(event){
 
