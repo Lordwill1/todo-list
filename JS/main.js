@@ -23,6 +23,7 @@ savedTheme === null ?
     changeTheme('standard')
     : changeTheme(localStorage.getItem('savedTheme'));
 
+  
 // Functions;
 function addToDo(event) {
     // add task feature has been implemented
@@ -65,8 +66,7 @@ function addToDo(event) {
         toDoInput.value = '';
     }
 
-}   
-
+} 
 
 function deletecheck(event){
 
