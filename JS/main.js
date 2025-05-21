@@ -34,23 +34,32 @@ function addToDo(event) {
     const toDoDiv = document.createElement("div");
     toDoDiv.classList.add('todo', `${savedTheme}-todo`);
 
+    const rowDiv = document.createElement('div');
+    rowDiv.classList.add('todo-row');
+
     const newToDo = document.createElement('li');
-    newToDo.innerText = `${taskText} - Deadline: ${formatDate(taskDate)}`;
+    newToDo.innerText = taskText;
     newToDo.classList.add('todo-item');
-    toDoDiv.appendChild(newToDo);
+    rowDiv.appendChild(newToDo);
+
+    const deadline = document.createElement('span');
+    deadline.classList.add('todo-deadline');
+    deadline.innerText = formatDate(taskDate);
+    rowDiv.appendChild(deadline);
 
     savelocal({ text: taskText, date: taskDate });
 
     const checked = document.createElement('button');
     checked.innerHTML = '<i class="fas fa-check"></i>';
     checked.classList.add('check-btn', `${savedTheme}-button`);
-    toDoDiv.appendChild(checked);
+    rowDiv.appendChild(checked);
 
     const deleted = document.createElement('button');
     deleted.innerHTML = '<i class="fas fa-trash"></i>';
     deleted.classList.add('delete-btn', `${savedTheme}-button`);
-    toDoDiv.appendChild(deleted);
+    rowDiv.appendChild(deleted);
 
+    toDoDiv.appendChild(rowDiv);
     toDoList.appendChild(toDoDiv);
 
     toDoInput.value = '';
@@ -60,7 +69,9 @@ function addToDo(event) {
 // Delete or Check
 function deletecheck(event) {
     const item = event.target;
-    const todo = item.parentElement;
+    // Pastikan mencari ke parent .todo
+    const todo = item.closest('.todo');
+    if (!todo) return; // Jika ga ketemu
 
     if (item.classList.contains('delete-btn')) {
         todo.classList.add("fall");
@@ -90,21 +101,32 @@ function getTodos() {
         const toDoDiv = document.createElement("div");
         toDoDiv.classList.add("todo", `${savedTheme}-todo`);
 
+        const rowDiv = document.createElement('div');
+        rowDiv.classList.add('todo-row');
+
         const newToDo = document.createElement('li');
-        newToDo.innerText = `${taskText}  -  Deadline: ${formatDate(taskDate)}`;
+        newToDo.innerText = taskText;
         newToDo.classList.add('todo-item');
-        toDoDiv.appendChild(newToDo);
+        rowDiv.appendChild(newToDo);
+
+        const deadline = document.createElement('div');
+        deadline.classList.add('todo-deadline');
+        deadline.innerText = formatDate(taskDate);
+        rowDiv.appendChild(deadline);
+
+        savelocal({ text: taskText, date: taskDate });
 
         const checked = document.createElement('button');
         checked.innerHTML = '<i class="fas fa-check"></i>';
-        checked.classList.add("check-btn", `${savedTheme}-button`);
-        toDoDiv.appendChild(checked);
+        checked.classList.add('check-btn', `${savedTheme}-button`);
+        rowDiv.appendChild(checked);
 
         const deleted = document.createElement('button');
         deleted.innerHTML = '<i class="fas fa-trash"></i>';
-        deleted.classList.add("delete-btn", `${savedTheme}-button`);
-        toDoDiv.appendChild(deleted);
+        deleted.classList.add('delete-btn', `${savedTheme}-button`);
+        rowDiv.appendChild(deleted);
 
+        toDoDiv.appendChild(rowDiv);
         toDoList.appendChild(toDoDiv);
     });
 }

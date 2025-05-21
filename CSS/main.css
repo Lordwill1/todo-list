@@ -468,3 +468,56 @@ form button {
 body, input, button, select, textarea {
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
+
+.todo {
+    width: 100%;
+    min-width: 0;
+    border-radius: 30px;
+    background: #01394c; /* atau warna theme */
+    margin-bottom: 1em;
+    padding: 0.2em 0.8em;
+    box-sizing: border-box;
+}
+
+.todo-row {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.8em;
+    width: 100%;
+}
+
+.todo-item {
+    flex: 1 1 auto;
+    word-break: break-all;
+}
+
+.todo-deadline {
+    color: #FFD166; /* atau warna lain sesuai selera, misal #FFAA00 */
+    font-size: 0.98rem;
+    font-weight: 600;
+    background: rgba(255, 220, 60, 0.08); /* background halus, opsional */
+    padding: 0.25em 0.7em;
+    border-radius: 1em;
+    margin-right: 0.9em; /* jarak ke tombol */
+    letter-spacing: 0.03em;
+}
+
+.check-btn, .delete-btn {
+    width: 2.2em;
+    height: 2.2em;
+    font-size: 1.18em;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.22em;
+}
+
+.todo-deadline,
+.check-btn,
+.delete-btn {
+    /* Biar item kanan tetap di kanan */
+    flex-shrink: 0;
+}
