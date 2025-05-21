@@ -9,7 +9,7 @@ body {
     align-items: center;
     display: flex;
     flex-direction: column;
-    font-family: 'Work Sans', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     min-height: 100vh;
     padding-top: 3%;
 }
@@ -131,11 +131,13 @@ body {
 
 form {
     display: flex;
-    font-size: 1.7rem;
+    align-items: center;
     justify-content: center;
-    margin: 15px 0;
+    gap: 0px;
+    margin: 15px auto;
     padding: 0.8rem;
     width: 100%;
+    max-width: 800px;
 }
 
 form input {
@@ -192,6 +194,38 @@ form input.light-input:hover {
 
 form input.darker-input:hover {
     background-color: #013141;
+}
+
+form input.todo-input,
+form input.todo-date,
+form button.todo-btn {
+    height: 45px;
+    font-size: 16px;
+    padding: 0 12px;
+    border: none;
+    outline: none;
+}
+
+form input.todo-input {
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    width: 100%;
+    max-width: 400px;
+}
+
+form input.todo-date {
+    border-radius: 0;
+    width: 160px;
+}
+
+form button.todo-btn {
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    min-width: 100px;
 }
 
 button {
@@ -377,4 +411,60 @@ form button {
     form > button.light-button {
         box-shadow: 0 0 5px lightgray;
     }
+}
+
+/* Tambahan untuk input tanggal */
+.todo-date {
+    padding: 10px;
+    font-size: 17px;
+    border: none;
+    outline: none;
+    transition: background-color 200ms ease-in-out;
+    max-width: 180px;
+}
+
+/* Theme untuk input tanggal */
+.todo-date.standard-input {
+    background-color: #181a1a;
+    color: rgb(247, 226, 223);
+}
+
+.todo-date.light-input {
+    background-color: #AEB1B4;
+    color: #1a150e;
+}
+
+.todo-date.light-input::placeholder {
+    color: #1a150e;
+    opacity: 0.7;
+}
+
+.todo-date.darker-input {
+    background-color: #01394c;
+    color: white;
+}
+
+.todo-date.darker-input::placeholder {
+    color: white;
+    opacity: 0.7;
+}
+
+.todo-date:hover {
+    cursor: pointer;
+}
+
+.todo-date.standard-input:hover {
+    background-color: rgb(0, 0, 0);
+}
+
+.todo-date.light-input:hover {
+    background-color: #919699;
+}
+
+.todo-date.darker-input:hover {
+    background-color: #013141;
+}
+
+body, input, button, select, textarea {
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
