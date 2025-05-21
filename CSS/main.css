@@ -473,7 +473,6 @@ body, input, button, select, textarea {
     width: 100%;
     min-width: 0;
     border-radius: 30px;
-    background: #01394c; /* atau warna theme */
     margin-bottom: 1em;
     padding: 0.2em 0.8em;
     box-sizing: border-box;
@@ -520,4 +519,9 @@ body, input, button, select, textarea {
 .delete-btn {
     /* Biar item kanan tetap di kanan */
     flex-shrink: 0;
+}
+
+.light-todo .todo-deadline {
+    color: #2D3540 !important;         /* biru tua */
+    background: rgba(0, 86, 179, 0.08) !important;
 }
