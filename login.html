@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../todo-list-devops-project/CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <title>Login Akun</title>
+</head>
+<body>
+    <div class="content">
+        <div class="text">Just list it!</div>
+        <form id="loginForm">
+            <div class="field">
+                <input type="email" id="email" required placeholder="Email">
+                <span class="fas fa-user"></span>
+            </div>
+            <div class="field">
+                <input type="password" id="password" required placeholder="Password">
+                <span class="fas fa-lock"></span>
+            </div>
+            <button type="submit">Login</button>
+            <div class="sign-up">
+                Not a member? <a href="register.html">Sign Up now</a>
+            </div>
+        </form>
+    </div>
+    <!-- Firebase SDK dulu -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loginForm').addEventListener('submit', login);
+        });
+    </script>
+</body>
+</html>

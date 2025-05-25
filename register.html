@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../todo-list-devops-project/CSS/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <title>Register Akun</title>
+</head>
+<body>
+    <div class="content">
+        <div class="text">Register</div>
+        <form id="registerForm">
+            <div class="field">
+                <input type="email" id="emailReg" required placeholder="Email">
+                <span class="fas fa-user"></span>
+            </div>
+            <div class="field">
+                <input type="password" id="passwordReg" required placeholder="Password">
+                <span class="fas fa-lock"></span>
+            </div>
+            <button type="submit">Sign Up</button>
+            <div class="sign-up">
+                Already have an account?
+                <div><a href="login.html">Login now</a></div>
+            </div>
+        </form>
+    </div>
+    <!-- Firebase SDK dulu -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Cek element sudah ada sebelum pasang event listener!
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('registerForm').addEventListener('submit', register);
+        });
+    </script>
+</body>
+</html>

@@ -525,3 +525,29 @@ body, input, button, select, textarea {
     color: #2D3540 !important;         /* biru tua */
     background: rgba(0, 86, 179, 0.08) !important;
 }
+
+.logout-btn {
+    padding: 0.5em 1.2em;
+    border-radius: 25px;
+    border: none;
+    background: #3498db;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    /* Box shadow halus saja */
+    box-shadow: 0 2px 6px rgba(52,152,219,0.12);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+.logout-btn:hover,
+.logout-btn:focus {
+    background: #217dbb;
+    color: #fff;
+    /* Glow tipis aja saat hover */
+    box-shadow: 0 2px 8px rgba(52,152,219,0.16);
+    outline: none;
+}
