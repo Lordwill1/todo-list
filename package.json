@@ -1,0 +1,26 @@
+{
+  "name": "todo-list-devops-project",
+  "version": "1.0.0",
+  "description": "* User-friendly\r * Local Storage Supported\r * Displays current Date and Time\r * Responsive, on all devices\r * Themes: Users can choose among different themes.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luthfan-ap/todo-list-devops-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luthfan-ap/todo-list-devops-project/issues"
+  },
+  "homepage": "https://github.com/luthfan-ap/todo-list-devops-project#readme",
+  "keywords": [],
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.4.0"
+  }
+}
