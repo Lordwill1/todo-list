@@ -89,7 +89,7 @@ jobs:
     - name: Build Docker image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ env.REPO_NAME }}
+        ECR_REPOSITORY: ${{ steps.repo-name.outputs.REPO_NAME }}
         IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -115,3 +115,32 @@ jobs:
         FULL_ECR_IMAGE_URI="${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
         echo "ECR Image URI: $FULL_ECR_IMAGE_URI"
         echo "::set-output name=full_image_uri::$FULL_ECR_IMAGE_URI" # Set output for this step
+
+    - name: Deploy to EC2
+      env:
+        EC2_PEM_KEY: ${{ secrets.SSH_KEY }}
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        EC2_USER: ${{ secrets.EC2_USER }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: counter-service-dev
+        IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
+      run: |
+        # Save PEM key to file and set permissions
+        echo "$EC2_PEM_KEY" > ec2.pem
+        chmod 400 ec2.pem
+
+        # SSH, SCP commands
+        SSH_COMMAND="ssh -i ec2.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST"
+        SCP_COMMAND="scp -i ec2.pem -o StrictHostKeyChecking=no"
+
+        #Login to Docker registry
+        $SSH_COMMAND "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REGISTRY"
+        
+        # Copy docker-compose.yml to EC2 server
+        $SCP_COMMAND docker-compose.yml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
+        
+        # Pull and run the Docker container on EC2
+        $SSH_COMMAND "cd /home/ubuntu/docker/ && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f docker-compose.yml up -d --force-recreate"
+        
+        # Cleanup PEM key
+        rm -f ec2.pem
