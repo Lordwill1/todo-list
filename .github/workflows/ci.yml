@@ -9,7 +9,7 @@ jobs:
   test-build-and-push:
     runs-on: ubuntu-latest
     outputs:
-      ecr_image_uri: ${{ steps.set-image-uri.outputs.image_uri }}
+      ecr_image_uri: ${{ steps.set-image-uri.outputs.full_image_uri }}
 
     steps:
     - name: Check out the repo
@@ -97,6 +97,7 @@ jobs:
 # PUSH IMAGE TO ECR (kasih tag "latest" dan push ke AWS ECR)
 
     - name: Push Docker image to Amazon ECR
+      id: set-image-uri
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: todo-list-devops-project

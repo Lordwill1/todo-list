@@ -54,21 +54,21 @@ jobs:
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.SSH_KEY }}
 
     - name: Deploy to EC2
       run: |
         chmod 600 ~/.ssh/id_rsa
         # Use the ECR_IMAGE_URI obtained from the previous step's output
-        ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-public-ip << 'EOF'
-          aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin your_aws_account_id.dkr.ecr.ap-southeast-2.amazonaws.com # Replace with your ECR registry URI
+        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-25-86-214.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 307242479232.dkr.ecr.ap-southeast-2.amazonaws.com
           
           docker pull ${{ steps.get_ecr_uri.outputs.final_ecr_image_uri }} # Use the output here
 
-          docker stop your_container_name || true
-          docker rm your_container_name || true
+          docker stop todo-list-devops-project || true
+          docker rm todo-list-devops-project || true
 
-          docker run -d --name your_container_name -p 80:80 ${{ steps.get_ecr_uri.outputs.final_ecr_image_uri }}
+          docker run -d --name todo-list-devops-project -p 8000:8000 ${{ steps.get_ecr_uri.outputs.final_ecr_image_uri }}
 
           docker image prune -f
 
