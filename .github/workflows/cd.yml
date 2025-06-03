@@ -1,5 +1,6 @@
 name: Deploy to AWS EC2
 
+# on master branch push / pull from develop
 on:
   push:
     branches:
