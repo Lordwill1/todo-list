@@ -1,0 +1,78 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  test:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Specify your Node.js version here
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run Jest tests
+      run: npm test
+
+  deploy:
+    needs: test
+    # Ensure both the workflow_run and the 'test' job succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' && needs.test.result == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-southeast-2
+
+    - name: Get ECR image URI from previous workflow
+      id: get_ecr_uri # Add an ID to this step
+      run: |
+        # Access the output from the completed workflow_run event
+        ECR_IMAGE_URI="${{ github.event.workflow_run.outputs.ecr_image_uri }}"
+        echo "Received ECR_IMAGE_URI: $ECR_IMAGE_URI"
+        echo "::set-output name=final_ecr_image_uri::$ECR_IMAGE_URI" # Set as step output for later use
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_KEY }}
+
+    - name: Deploy to EC2
+      run: |
+        chmod 600 ~/.ssh/id_rsa
+        # Use the ECR_IMAGE_URI obtained from the previous step's output
+        ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-25-86-214.ap-southeast-2.compute.amazonaws.com << 'EOF'
+          aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 307242479232.dkr.ecr.ap-southeast-2.amazonaws.com
+          
+          docker pull ${{ steps.get_ecr_uri.outputs.final_ecr_image_uri }} # Use the output here
+
+          docker stop todo-list-devops-project || true
+          docker rm todo-list-devops-project || true
+
+          docker run -d --name todo-list-devops-project -p 8000:8000 ${{ steps.get_ecr_uri.outputs.final_ecr_image_uri }}
+
+          docker image prune -f
+
+          echo "Deployment complete!"
+        EOF

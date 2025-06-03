@@ -1,0 +1,35 @@
+# Dependency directories
+node_modules/
+
+# Coverage results
+coverage/
+
+# Jest config (optional to ignore)
+jest.config.js
+
+# Log files
+*.log
+
+# OS / Editor specific
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+
+# ENV files
+.env
+.env.local
+.env.*.local
+
+# Build output (optional)
+dist/
+build/
+out/
+
+# Test snapshots (optional)
+__snapshots__/
+
+# System files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
