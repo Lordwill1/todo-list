@@ -59,7 +59,6 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        chmod 600 ~/.ssh/id_rsa
         # Use the ECR_IMAGE_URI obtained from the previous step's output
         ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-25-86-214.ap-southeast-2.compute.amazonaws.com << 'EOF'
           aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 307242479232.dkr.ecr.ap-southeast-2.amazonaws.com
