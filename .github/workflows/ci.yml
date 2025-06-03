@@ -6,14 +6,28 @@ on:
       - develop
 
 jobs:
-  build-and-push:
+  test-build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      ecr_image_uri: ${{ steps.set-image-uri.outputs.image_uri }}
 
     steps:
     - name: Check out the repo
       uses: actions/checkout@v2
       with:
         fetch-depth: 0 # Necessary to fetch all tags and history
+
+    - name: Setup Node.js for tests
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # IMPORTANT: Specify your Node.js version (e.g., '14', '16', '18', '20')
+        cache: 'npm'
+
+    - name: Install dependencies for tests
+      run: npm ci # Use npm ci for clean installs in CI environments
+
+    - name: Run Jest tests
+      run: npm test
 
 # ===== DETERMINE NEXT VERSION (untuk membuat new release version)
 
@@ -94,3 +108,8 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         # Push the latest tag
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+        # Construct the full ECR Image URI and set it as an output of this step
+        FULL_ECR_IMAGE_URI="${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
+        echo "ECR Image URI: $FULL_ECR_IMAGE_URI"
+        echo "::set-output name=full_image_uri::$FULL_ECR_IMAGE_URI" # Set output for this step
