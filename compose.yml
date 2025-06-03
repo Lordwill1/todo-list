@@ -7,11 +7,14 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+version: '3.8' # Use the latest version of Docker Compose
+
 services:
   app:
-    build:
-      context: .
-      target: final
+    image: ${IMAGE_URI}
+    ports:
+      - "8000:8000" # sesuaikan dengan kebutuhan port kamu
+    restart: always
     # If your application exposes a port, uncomment the following lines and change
     # the port numbers as needed. The first number is the host port and the second
     # is the port inside the container.

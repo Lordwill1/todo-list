@@ -140,6 +140,7 @@ jobs:
         $SCP_COMMAND compose.yml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
         
         # Pull and run the Docker container on EC2
+        $SSH_COMMAND "echo IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG > /home/ubuntu/docker/.env"
         $SSH_COMMAND "cd /home/ubuntu/docker/ && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f compose.yml up -d --force-recreate"
         
         # Cleanup PEM key
