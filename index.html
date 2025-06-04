@@ -39,11 +39,10 @@
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
 
-    <script src="script.js"></script>
-
-    <script src="JS/main.js" type="text/javascript"></script>
-    <script>
+    <script src="script.js"></script> <script src="JS/utils.js"></script> <script src="JS/main.js" type="text/javascript"></script> <script>
     // HANYA logout saja, cek login pakai main.js
+    // Pastikan tombol logout-btn ada dan memiliki event listener yang benar.
+    // Jika logout-btn ada di index.html, ini sudah benar.
         document.getElementById('logout-btn').addEventListener('click', () => {
             firebase.auth().signOut().then(() => {
                 window.location.href = "login.html";

@@ -24,13 +24,23 @@
             </div>
         </form>
     </div>
-    <!-- Firebase SDK dulu -->
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js"></script> <script src="JS/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('loginForm').addEventListener('submit', login);
+            document.getElementById('loginForm').addEventListener('submit', async (e) => { // Tambahkan 'async (e)'
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                try {
+                    await window.loginUser(email, password); // Panggil window.loginUser
+                    window.location.href = "index.html"; // Redirect ke index.html setelah login sukses
+                } catch (error) {
+                    alert("Login Gagal: " + error.message); // Tampilkan pesan error yang lebih informatif
+                    console.error("Login Error:", error);
+                }
+            });
         });
     </script>
 </body>

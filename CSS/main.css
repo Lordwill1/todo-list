@@ -19,7 +19,7 @@ body {
     background-image: linear-gradient(100deg, #575656, #062e3f);
     color: #ffdfdb;
     transition: 0.3s linear;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .light {
@@ -284,7 +284,7 @@ form button {
 
 .todo-list {
     min-width: 25%;
-
+    
     /* To remove the bullets of unordered list */
     list-style: none;
 }
@@ -551,3 +551,4 @@ body, input, button, select, textarea {
     box-shadow: 0 2px 8px rgba(52,152,219,0.16);
     outline: none;
 }
+

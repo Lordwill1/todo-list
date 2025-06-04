@@ -25,14 +25,24 @@
             </div>
         </form>
     </div>
-    <!-- Firebase SDK dulu -->
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js"></script> <script src="JS/auth.js"></script> 
     <script>
-        // Cek element sudah ada sebelum pasang event listener!
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('registerForm').addEventListener('submit', register);
+            document.getElementById('registerForm').addEventListener('submit', async (e) => { // Tambahkan 'async (e)'
+                e.preventDefault();
+                const email = document.getElementById('emailReg').value;
+                const password = document.getElementById('passwordReg').value;
+                try {
+                    await window.registerUser(email, password); // Panggil window.registerUser
+                    alert("Registrasi Berhasil! Silakan Login.");
+                    window.location.href = "login.html"; // Redirect ke login.html setelah registrasi sukses
+                } catch (error) {
+                    alert("Registrasi Gagal: " + error.message); // Tampilkan pesan error yang lebih informatif
+                    console.error("Register Error:", error);
+                }
+            });
         });
     </script>
 </body>

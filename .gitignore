@@ -33,3 +33,13 @@ __snapshots__/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# sisanya
+Dockerfile
+.github/
+compose.yaml
+terraform/
+README.Docker.md
+README.md
+package-lock.json
+package.json

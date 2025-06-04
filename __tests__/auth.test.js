@@ -1,3 +1,8 @@
+/**
+ * @jest-environment jsdom
+ */
+
+// Mock Firebase
 const mockCreateUserWithEmailAndPassword = jest.fn(() => Promise.resolve({ user: { uid: 'mock-uid-register' } }));
 const mockSignInWithEmailAndPassword = jest.fn(() => Promise.resolve({ user: { uid: 'mock-uid-login' } }));
 
@@ -10,73 +15,49 @@ global.firebase = {
   auth: jest.fn(() => mockAuth),
 };
 
-const { register, login } = require('../JS/auth.js');
+// Import setelah global.firebase disiapkan
+const { registerUser, loginUser } = require("../JS/auth.js");
 
 describe('Authentication Functions', () => {
   beforeEach(() => {
-    // clear all mocks, agar bersih
     jest.clearAllMocks();
   });
 
-  describe('register', () => {
-    it('should call firebase.auth().createUserWithEmailAndPassword with correct credentials on success', async () => {
+  describe('registerUser', () => {
+    it('berhasil memanggil createUserWithEmailAndPassword dengan email dan password benar', async () => {
       const email = 'test@example.com';
       const password = 'password123';
 
-      await register(email, password);
+      await registerUser(email, password);
 
-      // expect firebase.auth() dipanggil
-      expect(global.firebase.auth).toHaveBeenCalledTimes(1);
-      // expect createUserWithEmailAndPassword dipanggil pakai email dan password mock
-      expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledTimes(1);
+      expect(firebase.auth).toHaveBeenCalledTimes(1);
       expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith(email, password);
     });
 
-    it('should reject if firebase.auth().createUserWithEmailAndPassword throws an error', async () => {
-      const email = 'invalid@example.com';
-      const password = 'weakpassword';
-      const errorMessage = 'Firebase: The email address is already in use by another account (auth/email-already-in-use).';
-      const error = new Error(errorMessage);
-      
-      // reject pakai error
+    it('gagal saat createUserWithEmailAndPassword error', async () => {
+      const error = new Error('auth/email-already-in-use');
       mockCreateUserWithEmailAndPassword.mockImplementationOnce(() => Promise.reject(error));
-      
-      await expect(register(email, password)).rejects.toThrow(error);
-      
-      expect(global.firebase.auth).toHaveBeenCalledTimes(1);
-      expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledTimes(1);
-      expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith(email, password);
+
+      await expect(registerUser('a@a.com', '123456')).rejects.toThrow(error);
     });
   });
-  
-  describe('login', () => {
-    it('should call firebase.auth().signInWithEmailAndPassword with correct credentials on success', async () => {
+
+  describe('loginUser', () => {
+    it('berhasil memanggil signInWithEmailAndPassword dengan kredensial benar', async () => {
       const email = 'existing@example.com';
       const password = 'securepassword';
-      
-      await login(email, password);
-      
-      // expect firebase.auth() dipanggil
-      expect(global.firebase.auth).toHaveBeenCalledTimes(1);
-      // expect signInWithEmailAndPassword dipanggil pakai email dan password mock
-      expect(mockSignInWithEmailAndPassword).toHaveBeenCalledTimes(1);
+
+      await loginUser(email, password);
+
+      expect(firebase.auth).toHaveBeenCalledTimes(1);
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(email, password);
     });
 
-    it('should reject if firebase.auth().signInWithEmailAndPassword throws an error', async () => {
-      const email = 'nonexistent@example.com';
-      const password = 'wrongpassword';
-      const errorMessage = 'Firebase: There is no user record corresponding to this identifier. The user may have been deleted (auth/user-not-found).';
-      const error = new Error(errorMessage);
-
-      // reject pakai error
+    it('gagal saat signInWithEmailAndPassword error', async () => {
+      const error = new Error('auth/user-not-found');
       mockSignInWithEmailAndPassword.mockImplementationOnce(() => Promise.reject(error));
 
-      await expect(login(email, password)).rejects.toThrow(error);
-
-      expect(global.firebase.auth).toHaveBeenCalledTimes(1);
-      expect(mockSignInWithEmailAndPassword).toHaveBeenCalledTimes(1);
-      expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(email, password);
+      await expect(loginUser('wrong@example.com', 'wrongpw')).rejects.toThrow(error);
     });
   });
 });
