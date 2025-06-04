@@ -1,0 +1,147 @@
+name: Build and Push Docker image to AWS ECR
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  test-build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      ecr_image_uri: ${{ steps.set-image-uri.outputs.full_image_uri }}
+
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # Necessary to fetch all tags and history
+
+    - name: Setup Node.js for tests
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # IMPORTANT: Specify your Node.js version (e.g., '14', '16', '18', '20')
+        cache: 'npm'
+
+    - name: Install dependencies for tests
+      run: npm ci # Use npm ci for clean installs in CI environments
+
+    - name: Run Jest tests
+      run: npm test
+
+# ===== DETERMINE NEXT VERSION (untuk membuat new release version)
+
+    - name: Determine Next Version
+      id: next_version
+      run: |
+        # Fetch all tags
+        git fetch --tags
+        
+        # Get the latest tag, assume semver, and sort.
+        LATEST_TAG=$(git tag -l | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1)
+        
+        # If there's no tag yet, start with v0.0.0. Used for new repos
+        if [ -z "$LATEST_TAG" ]; then
+          LATEST_TAG="v0.0.0"
+        fi
+        
+        # Increment the patch version
+        NEXT_TAG=$(echo $LATEST_TAG | awk -F. '{print $1"."$2"."$3+1}')
+        
+        # Output the next version
+        echo "::set-output name=tag::$NEXT_TAG"
+        echo "Next version: $NEXT_TAG"
+
+# ===== CREATE RELEASE (dengan menggunakan tag dan versioning dari yang sebelumnya
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_2 }}
+      with:
+        tag_name: ${{ steps.next_version.outputs.tag }}
+        release_name: Release ${{ steps.next_version.outputs.tag }}
+        draft: false
+        prerelease: false
+
+# ===== BUILD DOCKER IMAGE (di AWS, build dari dockerfile)
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-southeast-2
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Extract repository name
+      id: repo-name
+      run: |
+        REPO_NAME="${GITHUB_REPOSITORY##*/}"
+        echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
+        echo "::set-output name=repo_name::$REPO_NAME"
+
+    - name: Build Docker image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ steps.repo-name.outputs.REPO_NAME }}
+        IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        echo "IMAGE_NAME=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+
+# PUSH IMAGE TO ECR (kasih tag "latest" dan push ke AWS ECR)
+
+    - name: Push Docker image to Amazon ECR
+      id: set-image-uri
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: todo-list-devops-project
+        IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
+      run: |
+        # Tag the image as latest
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        # Push the specific version tag
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        # Push the latest tag
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+        # Construct the full ECR Image URI and set it as an output of this step
+        FULL_ECR_IMAGE_URI="${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
+        echo "ECR Image URI: $FULL_ECR_IMAGE_URI"
+        echo "::set-output name=full_image_uri::$FULL_ECR_IMAGE_URI" # Set output for this step
+
+    - name: Deploy to EC2
+      env:
+        EC2_PEM_KEY: ${{ secrets.SSH_KEY }}
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        EC2_USER: ${{ secrets.EC2_USER }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: todo-list-devops-project
+        IMAGE_TAG: ${{ steps.next_version.outputs.tag }}
+      run: |
+        # Save PEM key to file and set permissions
+        echo "$EC2_PEM_KEY" > ec2.pem
+        chmod 400 ec2.pem
+
+        # SSH, SCP commands
+        SSH_COMMAND="ssh -i ec2.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST"
+        SCP_COMMAND="scp -i ec2.pem -o StrictHostKeyChecking=no"
+
+        #Login to Docker registry
+        $SSH_COMMAND "aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin $ECR_REGISTRY"
+        
+        # Copy compose.yml to EC2 server
+        $SCP_COMMAND compose.yml $EC2_USER@$EC2_HOST:/home/ubuntu/docker/
+        
+        # Pull and run the Docker container on EC2
+        $SSH_COMMAND "echo IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG > /home/ubuntu/docker/.env"
+        $SSH_COMMAND "cd /home/ubuntu/docker/ && docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG && docker compose -f compose.yml up -d --force-recreate"
+        
+        # Cleanup PEM key
+        rm -f ec2.pem
