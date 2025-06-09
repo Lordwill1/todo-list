@@ -63,7 +63,6 @@ function changeTheme(color) {
         profilePicture.classList.remove('standard-profile-picture', 'light-profile-picture', 'darker-profile-picture');
         profilePicture.classList.add(`${color}-profile-picture`);
     }
-    // --- AKHIR PERBAIKAN UNTUK HALAMAN PROFIL ---
 }
 
 // Membuat fungsi-fungsi ini tersedia secara global di objek `window` untuk Browser.

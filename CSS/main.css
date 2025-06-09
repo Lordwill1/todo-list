@@ -16,10 +16,7 @@ body {
     padding-top: 3%; /* Padding di bagian atas halaman */
     margin: 0; /* Pastikan tidak ada margin default browser */
     overflow-y: auto; /* Memungkinkan halaman untuk discroll jika konten lebih tinggi */
-    /* background-color dan color akan diatur oleh kelas tema di bawah */
-    /* Tambahkan background-color fallback jika background-image tidak memenuhi seluruh body */
     background-color: #363532; /* Warna dasar fallback yang cocok dengan standard theme */
-    /* --- KUNCI PERBAIKAN: Tambahkan padding-bottom di sini --- */
     padding-bottom: 50px; /* Sesuaikan nilai ini sesuai kebutuhan, misalnya 50px atau 5% */
 }
 
