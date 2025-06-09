@@ -18,6 +18,7 @@
             <div class="standard-theme theme-selector"></div>
             <div class="light-theme theme-selector"></div>
             <div class="darker-theme theme-selector"></div>
+            <button id="profile-btn" class="profile-btn"><i class="fas fa-user"></i> Profile</button>
             <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
         <h1 id="title">Just list it.<div id="border"></div></h1>
@@ -47,6 +48,9 @@
             firebase.auth().signOut().then(() => {
                 window.location.href = "login.html";
             });
+        });
+        document.getElementById('profile-btn').addEventListener('click', () => {
+            window.location.href = "profile.html";
         });
     </script>
 

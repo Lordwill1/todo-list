@@ -1,0 +1,77 @@
+/* CSS/profile.css */
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 50px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Universal shadow, tidak berubah dengan tema */
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    /* Properti tema (background, border, color, backdrop-filter) akan diatur oleh main.css melalui kelas tema */
+}
+
+/* Gaya spesifik tema untuk .profile-container - Ini akan ditambahkan oleh JS/utils.js */
+.standard-profile-container {
+    background-color: rgba(26, 27, 27, 0.6);
+    color: #ffdfdb; /* Warna teks yang diwarisi */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+}
+
+.light-profile-container {
+    background-color: rgba(174, 177, 180, 0.6);
+    color: #1a150e; /* Warna teks yang diwarisi */
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+}
+
+.darker-profile-container {
+    background-color: rgba(1, 40, 55, 0.6);
+    color: white; /* Warna teks yang diwarisi */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+
+.profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Universal shadow */
+    /* Border akan diatur oleh kelas tema yang ditambahkan oleh JS/utils.js */
+}
+
+/* Gaya spesifik tema untuk border .profile-picture */
+.standard-profile-picture { border-color: #ffdfdb; }
+.light-profile-picture { border-color: #1a150e; }
+.darker-profile-picture { border-color: white; }
+
+
+.profile-info h2,
+.profile-info p {
+    color: inherit; /* Ini akan mewarisi warna dari .profile-container */
+}
+
+/* Responsif untuk halaman profil - Tetap di sini karena ini spesifik untuk layout profil */
+@media (max-width: 600px) {
+    .profile-container {
+        padding: 20px;
+        margin-top: 30px;
+    }
+    .profile-info h2 {
+        font-size: 1.8rem;
+    }
+    .profile-info p {
+        font-size: 1rem;
+    }
+    .profile-picture {
+        width: 120px;
+        height: 120px;
+    }
+}

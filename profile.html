@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#062e3f">
+    <meta name="Description" content="User Profile Page for Just list it.">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" crossorigin="anonymous" />
+    <link rel="shortcut icon" type="image/png" href="assets/favicon.png"/>
+    <link rel="stylesheet" href="CSS/main.css">
+    <link rel="stylesheet" href="CSS/corner.css">
+    <link rel="stylesheet" href="CSS/profile.css"> <title>Profile - Just list it.</title>
+</head>
+<body>
+    <div id="header">
+        <div class="flexrow-container">
+            <div class="standard-theme theme-selector"></div>
+            <div class="light-theme theme-selector"></div>
+            <div class="darker-theme theme-selector"></div>
+            <button id="home-btn" class="home-btn"><i class="fas fa-home"></i> Home</button>
+            <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+        <h1 id="profile-title">Hello, there!<div id="border-profile"></div></h1>
+    </div>
+
+    <div class="profile-container">
+        <img src="assets/default-profile.png" alt="Profile Picture" class="profile-picture">
+        <div class="profile-info">
+            <h2>Welcome, <span id="user-email"></span></h2>
+            <p>Total tasks created: <span id="total-todos">0</span></p>
+            <p>Today is <span id="current-date"></span></p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+
+    <script src="script.js"></script> 
+    <script src="JS/utils.js"></script>
+    <script>
+        // --- KUNCI PERBAIKAN: Terapkan tema segera setelah utils.js dimuat ---
+        // Ini tidak menunggu hasil autentikasi Firebase
+        if (window.changeTheme) {
+            let savedTheme = localStorage.getItem('savedTheme');
+            savedTheme === null ? window.changeTheme('standard') : window.changeTheme(savedTheme);
+        } else {
+            console.error("Error: window.changeTheme is not defined. Make sure JS/utils.js is loaded correctly.");
+        }
+        // --- AKHIR KUNCI PERBAIKAN ---
+
+
+        const db = firebase.firestore();
+
+        // Amankan halaman profil dengan memeriksa status otentikasi
+        // Data Firebase (email, jumlah tugas) masih menunggu onAuthStateChanged
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = "login.html"; // Redirect jika tidak login
+            } else {
+                document.getElementById('user-email').innerText = user.email;
+                // --- KUNCI PERBAIKAN: Cek dulu apakah elemen display-email ada ---
+                const displayEmailSpan = document.getElementById('display-email');
+                if (displayEmailSpan) {
+                    displayEmailSpan.innerText = user.email;
+                }
+                // --- AKHIR KUNCI PERBAIKAN ---
+
+                // Hitung jumlah to-do list
+                try {
+                    const snapshot = await db.collection("todos").where("uid", "==", user.uid).get();
+                    document.getElementById('total-todos').innerText = snapshot.size;
+                } catch (error) {
+                    console.error("Error getting todo count:", error);
+                    document.getElementById('total-todos').innerText = "Error loading";
+                }
+
+                // Tampilkan tanggal dan waktu sekarang
+                const now = new Date();
+                document.getElementById('current-date').innerText = window.formatDate ? window.formatDate(now.toISOString()) : now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+        });
+
+        // Event listener untuk tombol logout (mirip dengan index.html)
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            firebase.auth().signOut().then(() => {
+                window.location.href = "login.html";
+            }).catch(error => {
+                console.error("Logout Error:", error);
+                alert("Gagal logout. Silakan coba lagi.");
+            });
+        });
+
+        // Event listener untuk tombol home (di halaman profil)
+        document.getElementById('home-btn').addEventListener('click', () => {
+            window.location.href = "index.html";
+        });
+
+        // Event listener untuk tombol tema (di halaman profil)
+        document.querySelector('.standard-theme').addEventListener('click', () => {
+            if (window.changeTheme) window.changeTheme('standard');
+        });
+        document.querySelector('.light-theme').addEventListener('click', () => {
+            if (window.changeTheme) window.changeTheme('light');
+        });
+        document.querySelector('.darker-theme').addEventListener('click', () => {
+            if (window.changeTheme) window.changeTheme('darker');
+        });
+    </script>
+</body>
+</html>

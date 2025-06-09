@@ -1,3 +1,6 @@
+/* CSS/main.css - Versi FINAL, minimal perubahan untuk konsistensi tema & tombol */
+
+/* --- RESET & BASIC STYLES --- */
 * {
     margin: 0;
     padding: 0;
@@ -5,38 +8,47 @@
 }
 
 body {
-    /* #363532, rgb(88, 111, 112) */
     align-items: center;
     display: flex;
     flex-direction: column;
     font-family: 'Plus Jakarta Sans', sans-serif;
     min-height: 100vh;
-    padding-top: 3%;
+    padding-top: 3%; /* Padding di bagian atas halaman */
+    margin: 0; /* Pastikan tidak ada margin default browser */
+    overflow-y: auto; /* Memungkinkan halaman untuk discroll jika konten lebih tinggi */
+    /* background-color dan color akan diatur oleh kelas tema di bawah */
+    /* Tambahkan background-color fallback jika background-image tidak memenuhi seluruh body */
+    background-color: #363532; /* Warna dasar fallback yang cocok dengan standard theme */
+    /* --- KUNCI PERBAIKAN: Tambahkan padding-bottom di sini --- */
+    padding-bottom: 50px; /* Sesuaikan nilai ini sesuai kebutuhan, misalnya 50px atau 5% */
 }
 
 /* Body light or darker themes */
+/* PASTIKAN TIDAK ADA `overflow: hidden;` DI SINI */
 .standard {
     background-image: linear-gradient(100deg, #575656, #062e3f);
-    color: #ffdfdb;
+    background-color: #062e3f; /* Fallback solid color */
+    color: #ffdfdb; /* Warna teks utama */
     transition: 0.3s linear;
-    /* overflow: hidden; */
 }
 
 .light {
     background-image: linear-gradient(100deg, #d4f1ff, #ffffff);
-    color: #1a150e;
+    background-color: #ffffff; /* Fallback solid color */
+    color: #1a150e; /* Warna teks utama */
     transition: 0.3s linear;
 }
 
 .darker {
     background-image: linear-gradient(100deg, #001214, #001f29);
-    color: white;
+    background-color: #001f29; /* Fallback solid color */
+    color: white; /* Warna teks utama */
     transition: 0.3s linear;
 }
 
 #header, #form, #datetime {
     margin: 0 1rem;
-    min-height: 10vh;
+    min-height: 10vh; /* OK jika konten di dalamnya membuatnya lebih besar */
     width: 100%;
 }
 
@@ -46,29 +58,30 @@ body {
     flex-direction: column;
     justify-content: space-around;
     font-size: 3rem;
-    min-height: 25vh;
+    min-height: 25vh; /* OK */
     width: 100%;
 }
 
 /* Theme buttons div */
 .flexrow-container {
     align-items: center;
-    align-self: flex-end;
+    align-self: flex-end; /* Memposisikan kontainer ini ke kanan */
     display: flex;
-    justify-content: space-around;
+    justify-content: flex-end; /* Memposisikan item di dalamnya ke kanan */
     margin-right: 3%;
+    gap: 10px; /* Memberi jarak antar tombol navigasi */
 }
 
 .theme-selector {
     border: 1px solid #d1dae3;
     border-radius: 100%;
     height: 35px;
-    margin: 0 8px;
-    transition: tranform 150ms ease-in-out, box-shadow 200ms ease-in-out;
+    margin: 0 8px; /* Margin antar lingkaran tema */
+    transition: transform 150ms ease-in-out, box-shadow 200ms ease-in-out; /* Perbaiki 'tranform' */
     width: 35px;
 }
 
-.theme-selector:hover { 
+.theme-selector:hover {
     box-shadow: white 0 0 8px;
     cursor: pointer;
 }
@@ -89,46 +102,47 @@ body {
     background-image: linear-gradient(100deg, #001214, #001f29);
 }
 
-/* Animation */
 #title {
     border-right: solid 3px rgba(0, 0, 0, 0.75);
     white-space: pre;
-    overflow: hidden;     
+    overflow: hidden;
     letter-spacing: 0.20rem;
-    margin-top: 50px;
+    
+    /* --- KUNCI PERBAIKAN: SESUAIKAN margin-top INI --- */
+    margin-top: 80px; /* Coba tingkatkan dari 50px menjadi 80px atau lebih */
+    
     margin-bottom: 20px;
     max-width: 480px;
-  }
-  
-  /* Animation */
+}
+
+/* Animation */
 #title {
     animation: animated-text 2s steps(11,end) 0.5s 1 normal both,
-        animated-cursor 750ms steps(11,end) infinite;
-  }
+               animated-cursor 750ms steps(11,end) infinite;
+}
 
 #title.darker-title {
     animation: animated-text 2s steps(11,end) 0.5s 1 normal both, darker-animated-cursor 750ms steps(11,end) infinite;
 }
-  
-  /* text animation */
-  
-  @keyframes animated-text{
+
+/* text animation */
+@keyframes animated-text{
     from{width: 0%;}
     to{width: 480px;}
-  }
-  
-  /* cursor animations */
-  
-  @keyframes animated-cursor{
+}
+
+/* cursor animations */
+@keyframes animated-cursor{
     from{border-right-color: rgba(0, 0, 0, 0.75);}
     to{border-right-color: transparent;}
-  }
+}
 
-  @keyframes darker-animated-cursor {
+@keyframes darker-animated-cursor {
     from{border-right-color: #01394c;}
     to{border-right-color: transparent;}
-  }
+}
 
+/* --- FORM STYLES --- */
 form {
     display: flex;
     align-items: center;
@@ -145,7 +159,6 @@ form input {
     font-size: 17px;
     border: none;
     outline: none;
-    /* border-radius: 15; */
     border-top-left-radius: 17px;
     border-bottom-left-radius: 17px;
     max-width: 500px;
@@ -154,47 +167,16 @@ form input {
 }
 
 /* Input themes */
-form input.standard-input {
-    background-color: #181a1a;
-    color: rgb(247, 226, 223);
-}
+form input.standard-input { background-color: #181a1a; color: rgb(247, 226, 223); }
+form input.light-input { background-color: #AEB1B4; color: #1a150e; }
+form input.light-input::placeholder { color: #1a150e; opacity: 0.7; }
+form input.darker-input { background-color: #01394c; color: white; }
+form input.darker-input::placeholder { color: white; opacity: 0.7; }
 
-
-form input.light-input {
-    background-color: #AEB1B4;
-    color: #1a150e;
-}
-
-form input.light-input::placeholder {
-    color: #1a150e;
-    opacity: 0.7;
-}
-
-form input.darker-input {
-    background-color: #01394c;
-    color: white;
-}
-
-form input.darker-input::placeholder {
-    color: white;
-    opacity: 0.7;
-}
-
-form input:hover {
-    cursor: text;
-}
-
-form input.standard-input:hover {
-    background-color: rgb(0, 0, 0);
-}
-
-form input.light-input:hover {
-    background-color: #919699;
-}
-
-form input.darker-input:hover {
-    background-color: #013141;
-}
+form input:hover { cursor: text; }
+form input.standard-input:hover { background-color: rgb(0, 0, 0); }
+form input.light-input:hover { background-color: #919699; }
+form input.darker-input:hover { background-color: #013141; }
 
 form input.todo-input,
 form input.todo-date,
@@ -228,71 +210,115 @@ form button.todo-btn {
     min-width: 100px;
 }
 
+/* --- KUNCI PERBAIKAN: Gaya Dasar Tombol (TANPA background & box-shadow umum) --- */
+/* Ini adalah gaya dasar untuk SEMUA elemen <button> */
 button {
     border: none;
-    outline: none; 
-    transition: box-shadow 200ms ease, background-color 200ms ease-in-out;
-}
-
-button:hover {
+    outline: none;
     cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    /* PENTING: Hapus semua properti background, color, box-shadow dari aturan ini */
+    /* Biarkan properti-properti ini ditentukan oleh kelas tema spesifik */
 }
 
-/* Button themes */
-button.standard-button {
-    background-color: rgb(247, 226, 223);
-    color: rgb(0, 0, 0);
-}
+/* --- KUNCI: Gaya Tombol Utama (I Got This!) --- */
+/* Tombol ini akan mendapatkan kelas tema dari JS */
+button.todo-btn.standard-button { background-color: rgb(247, 226, 223); color: rgb(0, 0, 0); box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+button.todo-btn.standard-button:hover { background-color: white; box-shadow: #fff8 0 0 10px; }
+button.todo-btn.light-button { background-color: white; color: #1a150e; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+button.todo-btn.light-button:hover { background-color: #f0f0f0; }
+button.todo-btn.darker-button { background-color: #002837; color: white; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+button.todo-btn.darker-button:hover { background-color: #001f29; }
 
-button.standard-button:hover {
-    background-color: white;
-    box-shadow: #fff8 0 0 10px;
-}
 
-button.light-button {
-    background-color: white;
-    color: #1a150e;
+/* --- KUNCI: Gaya Tombol Navigasi (Logout, Profile, Home) --- */
+/* Gaya Dasar untuk Logout Button */
+.logout-btn {
+    padding: 0.5em 1.2em;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    /* Hapus margin-left: auto; dari sini, sudah diatur flexrow-container */
 }
+/* Gaya spesifik tema untuk logout-btn */
+.logout-btn.standard-button { background: #3498db; color: #fff; box-shadow: 0 2px 6px rgba(52,152,219,0.12); }
+.logout-btn.standard-button:hover { background: #217dbb; box-shadow: 0 2px 8px rgba(52,152,219,0.16); }
+.logout-btn.light-button { background: #62a8d1; color: #1a150e; box-shadow: 0 2px 6px rgba(98, 168, 209, 0.12); }
+.logout-btn.light-button:hover { background: #4a91bb; box-shadow: 0 2px 8px rgba(98, 168, 209, 0.16); }
+.logout-btn.darker-button { background: #004c66; color: #fff; box-shadow: 0 2px 6px rgba(0, 76, 102, 0.12); }
+.logout-btn.darker-button:hover { background: #003a4c; box-shadow: 0 2px 8px rgba(0, 76, 102, 0.16); }
 
-button.light-button:hover {
-    background-color: #f0f0f0;
+/* Gaya Dasar untuk Profile Button */
+.profile-btn {
+    padding: 0.5em 1.2em;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    /* Hapus margin-left: auto; dan margin-right: 10px; dari sini */
 }
+/* Gaya spesifik tema untuk profile-btn */
+.profile-btn.standard-button { background: #9b59b6; color: #fff; box-shadow: 0 2px 6px rgba(155, 89, 182, 0.12); }
+.profile-btn.standard-button:hover { background: #8e44ad; box-shadow: 0 2px 8px rgba(155, 89, 182, 0.16); }
+.profile-btn.light-button { background: #c38ed1; color: #1a150e; box-shadow: 0 2px 6px rgba(195, 142, 209, 0.12); }
+.profile-btn.light-button:hover { background: #af7bc2; box-shadow: 0 2px 8px rgba(195, 142, 209, 0.16); }
+.profile-btn.darker-button { background: #5a3e6a; color: #fff; box-shadow: 0 2px 6px rgba(90, 62, 106, 0.12); }
+.profile-btn.darker-button:hover { background: #4b3258; box-shadow: 0 2px 8px rgba(90, 62, 106, 0.16); }
 
-button.darker-button {
-    background-color: #002837;
-    color: white;
+/* Gaya Dasar untuk Home Button */
+.home-btn {
+    padding: 0.5em 1.2em;
+    border-radius: 25px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    /* Hapus margin-left: auto; dan margin-right: 10px; dari sini */
 }
+/* Gaya spesifik tema untuk home-btn */
+.home-btn.standard-button { background: #2ecc71; color: #fff; box-shadow: 0 2px 6px rgba(46, 204, 113, 0.12); }
+.home-btn.standard-button:hover { background: #27ae60; box-shadow: 0 2px 8px rgba(46, 204, 113, 0.16); }
+.home-btn.light-button { background: #5cb85c; color: #1a150e; box-shadow: 0 2px 6px rgba(92, 184, 92, 0.12); }
+.home-btn.light-button:hover { background: #4cae4c; box-shadow: 0 2px 8px rgba(92, 184, 92, 0.16); }
+.home-btn.darker-button { background: #1e8449; color: #fff; box-shadow: 0 2px 6px rgba(30, 132, 73, 0.12); }
+.home-btn.darker-button:hover { background: #176a3b; box-shadow: 0 2px 8px rgba(30, 132, 73, 0.16); }
 
-button.darker-button:hover {
-    background-color: #001f29;
-}
 
-form button {
-    padding: 10px;
-    font-size: 17px;
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
-    min-width: 100px;
-}
-
+/* --- TO-DO LIST CONTAINER (myUnOrdList) --- */
+/* Biarkan konten menentukan tingginya dan body yang menggulir */
 #myUnOrdList {
     display: flex;
     justify-content: center;
     align-items: center;
     max-width: 1200px;
+    width: 100%;
+    /* Hapus semua flex-grow, max-height, dan overflow dari sini */
+    /* Ini adalah container untuk daftar to-do, bukan untuk digulir secara mandiri */
 }
 
 .todo-list {
     min-width: 25%;
-    
-    /* To remove the bullets of unordered list */
+    width: 100%;
     list-style: none;
 }
 
 .todo {
     margin: 1rem;
-    /* background: rgb(247, 226, 223); */
-    /* color: black; */
     font-size: 19px;
     display: flex;
     justify-content: space-between;
@@ -317,13 +343,9 @@ form button {
 
 .todo li{
     padding: 7px;
-    /* word-wrap: break-word; */
-    /* flex-wrap: wrap; */
     font-size: 20px;
-    flex: 1; /* To push the trash and the check button to the right */
+    flex: 1;
     border-radius: 30px;
-
-    /* wraps the links */
     overflow-wrap: anywhere;
 }
 
@@ -340,10 +362,9 @@ form button {
     padding: 0rem 0.5rem;
 }
 
-.fa-trash, .fa-check { 
+.fa-trash, .fa-check {
     pointer-events: none;
 }
-
 
 .completed {
     transition: 0.2s;
@@ -362,6 +383,7 @@ form button {
     .flexrow-container {
         align-self: unset;
         margin-right: 0;
+        justify-content: space-around; /* Agar tombol rata tengah di mobile */
     }
 }
 
@@ -369,11 +391,9 @@ form button {
     #header {
         font-size: 2rem;
     }
-
     #title {
-        animation: 
-            animated-text 3s steps(16,end) 0.5s 1 normal both,
-            animated-cursor 750ms steps(16,end) infinite;
+        animation: animated-text 3s steps(16,end) 0.5s 1 normal both,
+                   animated-cursor 750ms steps(16,end) infinite;
         margin-bottom: 10px;
         margin-top: 30px;
         max-width: 330px;
@@ -384,25 +404,17 @@ form button {
     #header {
         font-size: 1.5rem;
     }
-
     #title {
-        animation: 
-            animated-text 3.5s steps(16,end) 0.5s 1 normal both,
-            animated-cursor 750ms steps(16,end) infinite;
+        animation: animated-text 3.5s steps(16,end) 0.5s 1 normal both,
+                   animated-cursor 750ms steps(16,end) infinite;
         max-width: 255px;
     }
-}
-
-@media only screen and (max-width: 400px) {
     form {
-        align-items: center;
         flex-direction: column;
     }
-
     form input {
         border-radius: 17px;
     }
-
     form button {
         border-radius: 15px;
         margin-top: 15px;
@@ -424,46 +436,16 @@ form button {
 }
 
 /* Theme untuk input tanggal */
-.todo-date.standard-input {
-    background-color: #181a1a;
-    color: rgb(247, 226, 223);
-}
+.todo-date.standard-input { background-color: #181a1a; color: rgb(247, 226, 223); }
+.todo-date.light-input { background-color: #AEB1B4; color: #1a150e; }
+.todo-date.light-input::placeholder { color: #1a150e; opacity: 0.7; }
+.todo-date.darker-input { background-color: #01394c; color: white; }
+.todo-date.darker-input::placeholder { color: white; opacity: 0.7; }
 
-.todo-date.light-input {
-    background-color: #AEB1B4;
-    color: #1a150e;
-}
-
-.todo-date.light-input::placeholder {
-    color: #1a150e;
-    opacity: 0.7;
-}
-
-.todo-date.darker-input {
-    background-color: #01394c;
-    color: white;
-}
-
-.todo-date.darker-input::placeholder {
-    color: white;
-    opacity: 0.7;
-}
-
-.todo-date:hover {
-    cursor: pointer;
-}
-
-.todo-date.standard-input:hover {
-    background-color: rgb(0, 0, 0);
-}
-
-.todo-date.light-input:hover {
-    background-color: #919699;
-}
-
-.todo-date.darker-input:hover {
-    background-color: #013141;
-}
+.todo-date:hover { cursor: pointer; }
+.todo-date.standard-input:hover { background-color: rgb(0, 0, 0); }
+.todo-date.light-input:hover { background-color: #919699; }
+.todo-date.darker-input:hover { background-color: #013141; }
 
 body, input, button, select, textarea {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -493,13 +475,13 @@ body, input, button, select, textarea {
 }
 
 .todo-deadline {
-    color: #FFD166; /* atau warna lain sesuai selera, misal #FFAA00 */
+    color: #FFD166;
     font-size: 0.98rem;
     font-weight: 600;
-    background: rgba(255, 220, 60, 0.08); /* background halus, opsional */
+    background: rgba(255, 220, 60, 0.08);
     padding: 0.25em 0.7em;
     border-radius: 1em;
-    margin-right: 0.9em; /* jarak ke tombol */
+    margin-right: 0.9em;
     letter-spacing: 0.03em;
 }
 
@@ -507,48 +489,65 @@ body, input, button, select, textarea {
     width: 2.2em;
     height: 2.2em;
     font-size: 1.18em;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 0.22em;
+    border-radius: 80%;
+    margin: 0 5px;
 }
 
 .todo-deadline,
 .check-btn,
 .delete-btn {
-    /* Biar item kanan tetap di kanan */
     flex-shrink: 0;
 }
 
 .light-todo .todo-deadline {
-    color: #2D3540 !important;         /* biru tua */
+    color: #2D3540 !important;
     background: rgba(0, 86, 179, 0.08) !important;
 }
 
-.logout-btn {
-    padding: 0.5em 1.2em;
-    border-radius: 25px;
-    border: none;
-    background: #3498db;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    /* Box shadow halus saja */
-    box-shadow: 0 2px 6px rgba(52,152,219,0.12);
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-}
-.logout-btn:hover,
-.logout-btn:focus {
-    background: #217dbb;
-    color: #fff;
-    /* Glow tipis aja saat hover */
-    box-shadow: 0 2px 8px rgba(52,152,219,0.16);
-    outline: none;
+/* Gaya untuk tombol check dan delete berdasarkan tema */
+.check-btn.standard-button, .delete-btn.standard-button { background-color: rgb(247, 226, 223); color: rgb(0,0,0); }
+.check-btn.standard-button:hover, .delete-btn.standard-button:hover { background-color: white; }
+.check-btn.light-button, .delete-btn.light-button { background-color: white; color: #1a150e; }
+.check-btn.light-button:hover, .delete-btn.light-button:hover { background-color: #f0f0f0; }
+.check-btn.darker-button, .delete-btn.darker-button { background-color: #002837; color: white; }
+.check-btn.darker-button:hover, .delete-btn.darker-button:hover { background-color: #001f29; }
+
+/* CSS/main.css - Tambahan untuk gaya halaman profile.html */
+
+/* --- Gaya untuk Judul Halaman Profil (#profile-title) --- */
+#profile-title {
+    /* Warisi sebagian besar gaya dari #title di atas, tapi dengan override */
+    border-right: solid 3px rgba(0, 0, 0, 0.75); /* Border default */
+    white-space: pre; /* Pertahankan ini untuk efek cursor */
+    overflow: hidden; /* Pertahankan ini untuk efek cursor */
+    letter-spacing: 0.20rem;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    
+    /* PENTING: Menonaktifkan animasi text-typing dan memastikan lebar penuh */
+    animation: animated-cursor 750ms steps(11,end) infinite; /* HANYA animasi cursor */
+    max-width: none; /* Izinkan lebar penuh untuk menampilkan semua teks */
+    width: auto; /* Izinkan lebar menyesuaikan konten */
+    /* Hapus overflow: hidden jika menyebabkan teks terpotong */
+    /* overflow: visible; <- Jika masalah masih ada, coba ini */
 }
 
+/* Penyesuaian untuk tema darker pada judul profil */
+#profile-title.darker-title {
+    /* Ini akan mewarisi gaya darker-title dari #title, jika #title.darker-title ada */
+    /* Pastikan border-right-color diatur di sini untuk cursor */
+    border-right-color: #01394c; /* Warna cursor untuk tema darker */
+    animation: darker-animated-cursor 750ms steps(11,end) infinite; /* Pastikan animasi darker */
+}
+
+
+/* --- Gaya untuk Elemen Border (Cursor) di Halaman Profil (#border-profile) --- */
+#border-profile {
+    display: inline-block; /* Penting: agar div ini sejajar dengan teks */
+    width: 0; /* Lebar awal 0, karena ini hanya untuk menampilkan border cursor */
+    height: 1.1em; /* Sesuaikan tinggi border dengan tinggi font teks */
+    vertical-align: middle; /* Sejajarkan secara vertikal dengan teks */
+    /* Animasi cursor akan dikelola oleh #profile-title */
+    /* Warna border akan diwarisi dari #profile-title, atau bisa diset di sini */
+    /* border-right: solid 3px rgba(0, 0, 0, 0.75); /* Pastikan ini ada agar cursor terlihat */
+}
