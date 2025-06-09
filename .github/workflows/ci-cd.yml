@@ -32,7 +32,7 @@ jobs:
     - name: Run Jest tests
       run: npm test
       
-# ===== SONARCLOUD SCANNING
+# ===== SONARCLOUD SCANNER
 
     - name: Run tests with coverage
       run: |
