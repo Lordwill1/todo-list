@@ -29,6 +29,22 @@ jobs:
 
     - name: Run Jest tests
       run: npm test
+      
+# ===== SONARCLOUD SCANNING
+
+    - name: Run tests with coverage
+      run: |
+        npm run test -- --coverage
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v2
+      with:
+        args: >
+          -Dsonar.projectKey=luthfan-ap_todo-list-devops-project
+          -Dsonar.organization=pso-a-kelompok-7
+          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 # ===== DETERMINE NEXT VERSION (untuk membuat new release version)
 
