@@ -328,7 +328,6 @@ button.todo-btn.darker-button:hover { background-color: #001f29; }
     transition: background-color 200ms ease-in-out;
 }
 
-/* Items themes */
 .standard-todo {
     background-color: rgb(26, 27, 27);
 }
