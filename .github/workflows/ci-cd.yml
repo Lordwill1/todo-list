@@ -167,8 +167,8 @@ jobs:
 
 # Notifikasi Discord
 
-    - name: Tandai langkah berhasil
-      run: echo "LAST_STEP=Build Docker Image" >> $GITHUB_ENV
+    # - name: Tandai langkah berhasil
+    #   run: echo "LAST_STEP=Build Docker Image" >> $GITHUB_ENV
         
     - name: Notify to Discord on success
       if: success()
@@ -218,7 +218,7 @@ jobs:
           "embeds": [
             {
               "title": "❌ CI/CD Gagal",
-              "description": "Terjadi kesalahan setelah langkah: \`${{ env.LAST_STEP }}\`",
+              "description": "Terjadi kesalahan saat proses CI/CD.",
               "color": 15158332,
               "fields": [
                 {
