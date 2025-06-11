@@ -134,11 +134,12 @@ jobs:
         echo "ECR Image URI: $FULL_ECR_IMAGE_URI"
         echo "::set-output name=full_image_uri::$FULL_ECR_IMAGE_URI" # Set output for this step
 
-        
+
     - name: Debug host
       env:
         EC2_HOST: ${{ secrets.EC2_HOST }}
       run: |
+        # test isi ec2host
         echo "Host: $EC2_HOST"
 
     - name: Deploy to EC2
