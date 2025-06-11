@@ -4,7 +4,7 @@
   "description": "* User-friendly\r * Local Storage Supported\r * Displays current Date and Time\r * Responsive, on all devices\r * Themes: Users can choose among different themes.",
   "main": "script.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
