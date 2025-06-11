@@ -11,6 +11,8 @@ Its primary goal is to help users to record, manage, and complete their daily ta
 
 To ensure rapid and reliable deployments, we implemented CI/CD for the project. It automatically builds the application, runs the unit tests, and deploys the app to the server.
 
+You can read the full documentation (in bahasa Indonesia) [here](https://docs.google.com/document/d/1W3SrFKlxeNQtjuRTD7egDTQNEU-nV5t92ysfZFpU7bY/edit?usp=sharing).
+
 ### *Features*:
 * User Registration & Login
 * Personalized to-do list manager
