@@ -18,13 +18,14 @@ To ensure rapid and reliable deployments, we implemented CI/CD for the project. 
 * Cloud-based storage
 
 ### *Tools Used*:
-* JavaScript
-* Node.js
-* Firebase (Authentication & Firestore)
-* Github Actions
-* Docker
-* Jest
-* Terraform
+* [![Javascript](https://img.shields.io/badge/Javascript-FFFFFF?style=for-the-badge&logo=javascript&logoColor=%23FFFFFF&color=F7DF1E&link=https%3A%2F%2Fwww.javascript.com%2F)](https://www.javascript.com/)
+* ![Node.js](https://img.shields.io/badge/Node.js-013b01?style=for-the-badge&logo=nodedotjs&logoColor=%23339933&labelColor=FFFFFF&link=https%3A%2F%2Fnodejs.org%2Fen)
+* ![Firebase](https://img.shields.io/badge/Firebase%20(Authentication%20%26%20Firestore)-303030?style=for-the-badge&logo=firebase&logoColor=DD2C00&labelColor=FFFFFF&color=303030&link=https%3A%2F%2Ffirebase.google.com%2F)
+* ![Github Actions](https://img.shields.io/badge/Github%20Actions-303030?style=for-the-badge&logo=githubactions&logoColor=3094FF&labelColor=FFFFFF&color=A2D2FB&link=https%3A%2F%2Fgithub.com%2Ffeatures%2Factions)
+* ![Docker](https://img.shields.io/badge/Docker-303030?style=for-the-badge&logo=docker&logoColor=1D63ED&labelColor=FFFFFF&color=1d63ed&link=https%3A%2F%2Fwww.docker.com%2F)
+* ![Jest](https://img.shields.io/badge/Jest-303030?style=for-the-badge&logo=jest&logoColor=E74504&labelColor=FFFFFF&color=F5ECE4&link=https%3A%2F%2Fjestjs.io%2F)
+* ![Static Badge](https://img.shields.io/badge/SonarQube%20Cloud-303030?style=for-the-badge&logo=sonarqubecloud&logoColor=4169E1&labelColor=FFFFFF&color=E3ECFF&link=https%3A%2F%2Fsonarcloud.io%2F)
+* ![Terraform](https://img.shields.io/badge/Terraform-303030?style=for-the-badge&logo=terraform&logoColor=7B42BC&labelColor=FFFFFF&color=D9C4EC&link=https%3A%2F%2Fdeveloper.hashicorp.com%2Fterraform)
 
 ## **Getting Started**
 To get a copy of "Just List It", follow these simple steps.
