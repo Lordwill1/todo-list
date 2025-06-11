@@ -36,15 +36,6 @@ jobs:
       run: |
         npm run test -- --coverage
     
-    - name: Verify coverage files
-      run: |
-        echo "Listing contents of the 'coverage' directory:"
-        ls -la coverage/ || echo "Coverage directory not found or empty."
-        
-        echo "Attempting to print coverage/lcov.info:"
-        cat coverage/lcov.info || echo "coverage/lcov.info not found or could not be read."
-        continue-on-error: true
-        
 # ===== SONARCLOUD SCANNER
 
     - name: SonarCloud Scan
@@ -54,6 +45,7 @@ jobs:
           -Dsonar.projectKey=luthfan-ap_todo-list-devops-project
           -Dsonar.organization=pso-a-kelompok-7
           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+          -Dsonar.verbose=true
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
