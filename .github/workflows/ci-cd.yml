@@ -7,7 +7,7 @@ on:
       - develop
   pull_request:
     branches:
-      # only on pull request to the master branch
+      # only on pull request to the master branch.
       - master
 
 jobs:
