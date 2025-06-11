@@ -163,3 +163,20 @@ jobs:
         
         # Cleanup PEM key
         rm -f ec2.pem
+
+
+    - name: Notify to Discord on success
+      if: success()
+      run: |
+        curl -H "Content-Type: application/json" \
+        -X POST \
+        -d "{\"content\": \"✅ CI/CD berhasil untuk tag ${{ steps.next_version.outputs.tag }}\"}" \
+        ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    - name: Notify to Discord on failure
+      if: failure()
+      run: |
+        curl -H "Content-Type: application/json" \
+        -X POST \
+        -d "{\"content\": \"❌ CI/CD gagal di commit: ${{ github.sha }}\"}" \
+        ${{ secrets.DISCORD_WEBHOOK_URL }}

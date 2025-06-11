@@ -1,38 +1,62 @@
-provider "aws" {
-  region = var.aws_region
+data "aws_key_pair" "existing" {
+  key_name = var.key_pair_name
 }
 
-# Menggunakan ECR yang sudah ada
-data "aws_ecr_repository" "todo_list" {
-  name = var.ecr_repo_name
+resource "aws_security_group" "ci_cd_sg" {
+  name        = "ci-cd-sg"
+  description = "Allow SSH and HTTP access"
+  vpc_id      = data.aws_vpc.default.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # SSH - bisa diganti untuk keamanan
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # App port
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
-# Security Group (gunakan data source agar tidak hardcode)
-data "aws_security_group" "default_sg" {
-  id = var.security_group_id
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
 }
 
-resource "aws_instance" "todo_ec2" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  key_name      = var.key_name
-    associate_public_ip_address = true
-  security_groups = [data.aws_security_group.default_sg.name]
+data "aws_vpc" "default" {
+  default = true
+}
 
-  user_data = <<-EOF
-              #!/bin/bash
-              apt-get update -y
-              apt-get install -y docker.io awscli
-              systemctl start docker
-              usermod -aG docker ubuntu
-              su - ubuntu -c "aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${data.aws_ecr_repository.todo_list.repository_url}"
-              docker pull ${data.aws_ecr_repository.todo_list.repository_url}:latest
-              docker run -d -p 80:80 ${data.aws_ecr_repository.todo_list.repository_url}:latest
-              EOF
+resource "aws_instance" "ci_cd_ec2" {
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
+  key_name = data.aws_key_pair.existing.key_name
+  vpc_security_group_ids = [aws_security_group.ci_cd_sg.id]
 
   tags = {
-    Name        = "todo-list-ec2"
-    Environment = "dev"
-    Project     = "todo-list-devops"
+    Name = "ci-cd-ec2"
   }
+
 }
