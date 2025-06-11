@@ -134,14 +134,7 @@ jobs:
         echo "ECR Image URI: $FULL_ECR_IMAGE_URI"
         echo "::set-output name=full_image_uri::$FULL_ECR_IMAGE_URI" # Set output for this step
 
-
-    - name: Debug host
-      env:
-        EC2_HOST: ${{ secrets.EC2_HOST }}
-      run: |
-        # test isi ec2host
-        echo "Host: $EC2_HOST"
-
+    
     - name: Deploy to EC2
       env:
         EC2_PEM_KEY: ${{ secrets.SSH_KEY }}
@@ -172,7 +165,11 @@ jobs:
         # Cleanup PEM key
         rm -f ec2.pem
 
+# Notifikasi Discord
 
+    - name: Tandai langkah berhasil
+      run: echo "LAST_STEP=Build Docker Image" >> $GITHUB_ENV
+        
     - name: Notify to Discord on success
       if: success()
       run: |
@@ -221,9 +218,13 @@ jobs:
           "embeds": [
             {
               "title": "❌ CI/CD Gagal",
-              "description": "Terjadi kesalahan saat proses CI/CD.",
+              "description": "Terjadi kesalahan setelah langkah: \`${{ env.LAST_STEP }}\`",
               "color": 15158332,
               "fields": [
+                {
+                  "name": "Log",
+                  "value": "[Lihat log run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+                }
                 {
                   "name": "Commit",
                   "value": "[${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
