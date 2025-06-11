@@ -48,6 +48,15 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+    - name: Verify coverage files
+      run: |
+        echo "Listing contents of the 'coverage' directory:"
+        ls -la coverage/ || echo "Coverage directory not found or empty."
+        
+        echo "Attempting to print coverage/lcov.info:"
+        cat coverage/lcov.info || echo "coverage/lcov.info not found or could not be read."
+      continue-on-error: true
+
 # ===== DETERMINE NEXT VERSION (untuk membuat new release version)
 
     - name: Determine Next Version
