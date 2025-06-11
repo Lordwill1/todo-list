@@ -1,4 +1,4 @@
-name: Build and Push Docker image to AWS ECR
+name: CI-CD Pipeline
 
 on:
   push:
@@ -88,7 +88,7 @@ jobs:
         draft: false
         prerelease: false
 
-# ===== BUILD DOCKER IMAGE (di AWS, build dari dockerfile)
+# ===== BUILD DOCKER IMAGE
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
