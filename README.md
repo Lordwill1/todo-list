@@ -25,7 +25,6 @@ To ensure rapid and reliable deployments, we implemented CI/CD for the project. 
 * ![Docker](https://img.shields.io/badge/Docker-303030?style=for-the-badge&logo=docker&logoColor=1D63ED&labelColor=FFFFFF&color=1d63ed&link=https%3A%2F%2Fwww.docker.com%2F)
 * ![Jest](https://img.shields.io/badge/Jest-303030?style=for-the-badge&logo=jest&logoColor=E74504&labelColor=FFFFFF&color=F5ECE4&link=https%3A%2F%2Fjestjs.io%2F)
 * ![Static Badge](https://img.shields.io/badge/SonarQube%20Cloud-303030?style=for-the-badge&logo=sonarqubecloud&logoColor=4169E1&labelColor=FFFFFF&color=E3ECFF&link=https%3A%2F%2Fsonarcloud.io%2F)
-* ![Terraform](https://img.shields.io/badge/Terraform-303030?style=for-the-badge&logo=terraform&logoColor=7B42BC&labelColor=FFFFFF&color=D9C4EC&link=https%3A%2F%2Fdeveloper.hashicorp.com%2Fterraform)
 
 ## **Getting Started**
 To get a copy of "Just List It", follow these simple steps.
@@ -39,7 +38,7 @@ Before you begin, ensure that you have installed the following in your system:
     * You can download it from [git-scm.com](git-scm.com).
 * Firebase Project
     * This "Just List It" project uses Firebase Authentication and Firestore.
-    * === (*This readme part has not been completed yet.) ===
+    * You can build it from [console.firebase.google.com](console.firebase.google.com).
 
 ### *Installation*:
 1. **Clone the Repository:**
@@ -53,10 +52,65 @@ npm install
 ```
 
 ### *Configuration:*
-1. Set up the Firebase Environment Variables:
+1. Set up your Firebase Project
+   * Go to [Firebase Console](console.firebase.google.com).
+   * Click "Create a Firebase Project" and follow the prompts to create a new project.
+   * Once created, select your new project from the Firebase dashboard.
+2. Register your Web App
+   * In your Firebase Console, click the web (“</>”) icon to register a new web app.
+   * Enter an app nickname (e.g., "Just List It App"), and click Register app.
+   * You will be shown your Firebase SDK config (apiKey, authDomain, etc). Copy this config — you will use it in your project (usually in script.js).
+3. Enable Firebase Authentication
+   * In your Firebase Console sidebar, go to Build > Authentication.
+   * Click "Get started".
+   * In the Sign-in method tab, enable Email/Password authentication (or any other methods you want).
+   * Save your changes.
+4. Enable Firestore Database
+   * In the sidebar, click Build > Firestore Database.
+   * Click "Create database".
+   * Select Start in test mode (recommended for development).
+      > You can update security rules for production later.
+   * Choose your database location (any is fine for most use cases) and click Next until done.
+5. Add Firebase SDKs to your project
+   * In your main HTML file (e.g., index.html), add these scripts before your main JavaScript files:
+     ```sh
+     <!-- Firebase App (core SDK) -->
+     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+     <!-- Firebase Authentication -->
+     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+     <!-- Firebase Firestore -->
+     <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+     ```
+6. Initialize Firebase in your code
+   * In your JavaScript file (e.g., script.js), paste the config you copied earlier:
+     ```sh
+     const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+     };
+     // Initialize Firebase
+     firebase.initializeApp(firebaseConfig);
+     ```
+7. Using Authentication and Firestore
+   * Use firebase.auth() for authentication methods (register, login, logout, etc).
+   * Use firebase.firestore() to read/write to Cloud Firestore.
+     ```sh
+     const db = firebase.firestore();
+     const user = firebase.auth().currentUser;
+     
+     db.collection("todos").add({
+        uid: user.uid,
+        text: "My task",
+        date: "2024-06-01",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+     });
+     ```
 
-=== (*This readme part has not been completed yet.) ===
-
+Good luck and happy coding! 🚀
 
 ## **CI/CD Pipeline Overview**
 This project implemented a Continuous Integration / Continuous Delivery (CI/CD) Pipeline to automate the software delivery process, ensuring a rapid and reliable deployments.
@@ -74,14 +128,14 @@ Our CI/CD pipeline is automatically triggered by several specific events in the 
     * The application is built into a production-ready container.
 * **Test:**
     * Tests are done using Jest unit tests, which will be executed to the application that has just been built.
-    * If any of the test failed, the pipeline will stop immediately and returns an error.
+    * If any of the tests fail, the pipeline will stop immediately and return an error.
 * **AWS Authentication:**
     * Authenticates to your AWS account
 * **Push Image to AWS ECR:**
-    * The built docker image will be pushed into AWS
+    * The built Docker Image will be pushed into AWS
     * Uses AWS ECR for storing the Docker images
 * **Containerization & Deployment:**
-    * The built application are dockerized and deployed to the server environment
+    * The built application is dockerized and deployed to the server environment
     * In this project, we use EC2 (Elastic Compute Cloud) as our server infrastructure.
 
 <!-- 
