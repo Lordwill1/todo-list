@@ -224,7 +224,7 @@ jobs:
                 {
                   "name": "Log",
                   "value": "[Lihat log run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-                }
+                },
                 {
                   "name": "Commit",
                   "value": "[${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
