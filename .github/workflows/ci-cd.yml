@@ -3,8 +3,7 @@ name: Build and Push Docker image to AWS ECR
 on:
   push:
     branches:
-      # both master and develop branches.
-      - master
+      # only on push to the develop branch.
       - develop
   pull_request:
     branches:
