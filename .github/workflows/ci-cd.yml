@@ -177,14 +177,73 @@ jobs:
       if: success()
       run: |
         curl -H "Content-Type: application/json" \
-        -X POST \
-        -d "{\"content\": \"✅ CI/CD berhasil untuk tag ${{ steps.next_version.outputs.tag }}\"}" \
-        ${{ secrets.DISCORD_WEBHOOK_URL }}
+          -X POST \
+          -d @- ${{ secrets.DISCORD_WEBHOOK_URL }} <<EOF
+        {
+          "content": "✅ CI/CD sukses!",
+          "embeds": [
+            {
+              "title": "✅ CI/CD Berhasil",
+              "description": "Tag \`${{ steps.next_version.outputs.tag }}\` berhasil dideploy ke EC2.",
+              "color": 3066993,
+              "fields": [
+                {
+                  "name": "Commit",
+                  "value": "[${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+                },
+                {
+                  "name": "Branch",
+                  "value": "${{ github.ref_name }}"
+                },
+                {
+                  "name": "Image URI",
+                  "value": "${{ steps.set-image-uri.outputs.full_image_uri }}"
+                }
+              ],
+              "author": {
+                "name": "${{ github.actor }}",
+                "icon_url": "https://github.com/${{ github.actor }}.png"
+              },
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }
+          ]
+        }
+        EOF
 
     - name: Notify to Discord on failure
       if: failure()
       run: |
         curl -H "Content-Type: application/json" \
-        -X POST \
-        -d "{\"content\": \"❌ CI/CD gagal di commit: ${{ github.sha }}\"}" \
-        ${{ secrets.DISCORD_WEBHOOK_URL }}
+          -X POST \
+          -d @- ${{ secrets.DISCORD_WEBHOOK_URL }} <<EOF
+        {
+          "content": "❌ CI/CD gagal!",
+          "embeds": [
+            {
+              "title": "❌ CI/CD Gagal",
+              "description": "Terjadi kesalahan saat proses CI/CD.",
+              "color": 15158332,
+              "fields": [
+                {
+                  "name": "Commit",
+                  "value": "[${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+                },
+                {
+                  "name": "Branch",
+                  "value": "${{ github.ref_name }}"
+                },
+                {
+                  "name": "Image URI",
+                  "value": "${{ steps.set-image-uri.outputs.full_image_uri }}"
+                }
+              ],
+              "author": {
+                "name": "${{ github.actor }}",
+                "icon_url": "https://github.com/${{ github.actor }}.png"
+              },
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }
+          ]
+        }
+        EOF
+
