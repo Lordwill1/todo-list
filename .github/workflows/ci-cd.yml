@@ -170,7 +170,7 @@ jobs:
         # Cleanup PEM key
         rm -f ec2.pem
 
-# ===== DISCORD NOTIFICATION
+# ===== DISCORD NOTIFICATION a
 
     # - name: Tandai langkah berhasil
     #   run: echo "LAST_STEP=Build Docker Image" >> $GITHUB_ENV
