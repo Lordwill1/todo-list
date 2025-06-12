@@ -4,7 +4,7 @@ on:
   push:
     branches:
       # only on push to the master branch.
-      - develop
+      - master
   pull_request:
     branches:
       # only on pull request to the master branch.
