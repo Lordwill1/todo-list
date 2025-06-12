@@ -139,6 +139,13 @@ Our CI/CD pipeline is automatically triggered by several specific events in the 
 * **Containerization & Deployment:**
     * The built application is dockerized and deployed to the server environment
     * In this project, we use EC2 (Elastic Compute Cloud) as our server infrastructure.
+      
+### Top contributors:
+
+<a href="https://github.com/luthfan-ap/todo-list-devops-project/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=luthfan-ap/todo-list-devops-project" alt="contrib.rocks image" />
+</a>
+
 
 <!-- 
 ## *WEBSITE DEMO*
