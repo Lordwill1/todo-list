@@ -3,11 +3,11 @@ name: CI-CD Pipeline
 on:
   push:
     branches:
-      # only on push to the master branch.
+      # only on push to the master branch
       - master
   pull_request:
     branches:
-      # only on pull request to the master branch.
+      # only on pull request to the master branch
       - master
 
 jobs:
