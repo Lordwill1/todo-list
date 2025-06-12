@@ -195,7 +195,7 @@ jobs:
                 },
                 {
                   "name": "Branch",
-                  "value": "${{ github.head_ref || github.ref_name }}"
+                  "value": "${{ github.ref_name }}"
                 },
                 {
                   "name": "Image URI",
@@ -236,7 +236,7 @@ jobs:
                 },
                 {
                   "name": "Branch",
-                  "value": ""Branch": "${{ github.head_ref || github.ref_name }}"
+                  "value": ""Branch": "${{ github.ref_name }}"
                 },
                 {
                   "name": "Image URI",
