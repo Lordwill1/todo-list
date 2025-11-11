@@ -1,203 +1,290 @@
-// Selectors
+// =====================================================
+// BACKEND API URL
+// =====================================================
+const API_URL = "http://localhost:4000";
 
+// =====================================================
+// SELECTORS
+// =====================================================
 const toDoInput = document.querySelector('.todo-input');
 const toDoBtn = document.querySelector('.todo-btn');
 const toDoList = document.querySelector('.todo-list');
+
 const standardTheme = document.querySelector('.standard-theme');
 const lightTheme = document.querySelector('.light-theme');
 const darkerTheme = document.querySelector('.darker-theme');
 
+const categorySelect = document.getElementById('task-category');
+const filtersEl = document.getElementById('filters');
 
-// Event Listeners
+let savedTheme = localStorage.getItem('savedTheme') || 'standard';
+let todos = [];
+let currentFilter = 'all';
 
-toDoBtn.addEventListener('click', addToDo);
-toDoList.addEventListener('click', deletecheck);
-document.addEventListener("DOMContentLoaded", getTodos);
-standardTheme.addEventListener('click', () => changeTheme('standard'));
-lightTheme.addEventListener('click', () => changeTheme('light'));
-darkerTheme.addEventListener('click', () => changeTheme('darker'));
+// =====================================================
+// INIT
+// =====================================================
+document.addEventListener("DOMContentLoaded", () => {
+    changeTheme(savedTheme);
+    fetchTodos();
+});
 
-// Check if one theme has been set previously and apply it (or std theme if not found):
-let savedTheme = localStorage.getItem('savedTheme');
-savedTheme === null ?
-    changeTheme('standard')
-    : changeTheme(localStorage.getItem('savedTheme'));
+// Ask browser notification permission for reminders
+if ("Notification" in window) {
+    Notification.requestPermission().catch(()=>{});
+}
 
-// Functions;
-function addToDo(event) {
-    // Prevents form from submitting / Prevents form from relaoding;
-    event.preventDefault();
+// =====================================================
+// BACKEND FUNCTIONS
+// =====================================================
 
-    // toDo DIV;
-    const toDoDiv = document.createElement("div");
-    toDoDiv.classList.add('todo', `${savedTheme}-todo`);
+// ✅ Fetch all todos from backend
+async function fetchTodos() {
+    const res = await fetch(`${API_URL}/todos`);
+    todos = await res.json();
+    renderTodos();
 
-    // Create LI
-    const newToDo = document.createElement('li');
-    if (toDoInput.value === '') {
-            alert("You must write something!");
-        } 
-    else {
-        // newToDo.innerText = "hey";
-        newToDo.innerText = toDoInput.value;
-        newToDo.classList.add('todo-item');
-        toDoDiv.appendChild(newToDo);
+    // schedule reminders again
+    todos.forEach(scheduleReminder);
+}
 
-        // Adding to local storage;
-        savelocal(toDoInput.value);
-
-        // check btn;
-        const checked = document.createElement('button');
-        checked.innerHTML = '<i class="fas fa-check"></i>';
-        checked.classList.add('check-btn', `${savedTheme}-button`);
-        toDoDiv.appendChild(checked);
-        // delete btn;
-        const deleted = document.createElement('button');
-        deleted.innerHTML = '<i class="fas fa-trash"></i>';
-        deleted.classList.add('delete-btn', `${savedTheme}-button`);
-        toDoDiv.appendChild(deleted);
-
-        // Append to list;
-        toDoList.appendChild(toDoDiv);
-
-        // CLearing the input;
-        toDoInput.value = '';
-    }
-
-}   
-
-
-function deletecheck(event){
-
-    // console.log(event.target);
-    const item = event.target;
-
-    // delete
-    if(item.classList[0] === 'delete-btn')
-    {
-        // item.parentElement.remove();
-        // animation
-        item.parentElement.classList.add("fall");
-
-        //removing local todos;
-        removeLocalTodos(item.parentElement);
-
-        item.parentElement.addEventListener('transitionend', function(){
-            item.parentElement.remove();
+// ✅ Add todo to backend
+async function addTodoBackend(text, category) {
+    const res = await fetch(`${API_URL}/todos`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            text,
+            category
         })
-    }
-
-    // check
-    if(item.classList[0] === 'check-btn')
-    {
-        item.parentElement.classList.toggle("completed");
-    }
-
-
+    });
+    return await res.json();
 }
 
-
-// Saving to local storage:
-function savelocal(todo){
-    //Check: if item/s are there;
-    let todos;
-    if(localStorage.getItem('todos') === null) {
-        todos = [];
-    }
-    else {
-        todos = JSON.parse(localStorage.getItem('todos'));
-    }
-
-    todos.push(todo);
-    localStorage.setItem('todos', JSON.stringify(todos));
-}
-
-
-
-function getTodos() {
-    //Check: if item/s are there;
-    let todos;
-    if(localStorage.getItem('todos') === null) {
-        todos = [];
-    }
-    else {
-        todos = JSON.parse(localStorage.getItem('todos'));
-    }
-
-    todos.forEach(function(todo) {
-        // toDo DIV;
-        const toDoDiv = document.createElement("div");
-        toDoDiv.classList.add("todo", `${savedTheme}-todo`);
-
-        // Create LI
-        const newToDo = document.createElement('li');
-        
-        newToDo.innerText = todo;
-        newToDo.classList.add('todo-item');
-        toDoDiv.appendChild(newToDo);
-
-        // check btn;
-        const checked = document.createElement('button');
-        checked.innerHTML = '<i class="fas fa-check"></i>';
-        checked.classList.add("check-btn", `${savedTheme}-button`);
-        toDoDiv.appendChild(checked);
-        // delete btn;
-        const deleted = document.createElement('button');
-        deleted.innerHTML = '<i class="fas fa-trash"></i>';
-        deleted.classList.add("delete-btn", `${savedTheme}-button`);
-        toDoDiv.appendChild(deleted);
-
-        // Append to list;
-        toDoList.appendChild(toDoDiv);
+// ✅ Delete todo from backend
+async function deleteTodoBackend(id) {
+    await fetch(`${API_URL}/todos/${id}`, {
+        method: "DELETE"
     });
 }
 
-
-function removeLocalTodos(todo){
-    //Check: if item/s are there;
-    let todos;
-    if(localStorage.getItem('todos') === null) {
-        todos = [];
-    }
-    else {
-        todos = JSON.parse(localStorage.getItem('todos'));
-    }
-
-    const todoIndex =  todos.indexOf(todo.children[0].innerText);
-    // console.log(todoIndex);
-    todos.splice(todoIndex, 1);
-    // console.log(todos);
-    localStorage.setItem('todos', JSON.stringify(todos));
+// ✅ Toggle complete
+async function toggleCompleteBackend(id) {
+    await fetch(`${API_URL}/todos/${id}/complete`, {
+        method: "PUT"
+    });
 }
 
-// Change theme function:
+// ✅ Edit todo
+async function editTodoBackend(id, newText) {
+    await fetch(`${API_URL}/todos/${id}`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ text: newText })
+    });
+}
+
+// =====================================================
+// ADD TODO
+// =====================================================
+async function addToDo(e) {
+    e.preventDefault();
+
+    const text = toDoInput.value.trim();
+    const category = categorySelect.value;
+
+    if (!text) {
+        alert("You must write something!");
+        return;
+    }
+
+    const newTodo = await addTodoBackend(text, category);
+    todos.push(newTodo);
+
+    toDoInput.value = "";
+    renderTodos();
+}
+
+// =====================================================
+// CLICK HANDLERS
+// =====================================================
+toDoBtn.addEventListener("click", addToDo);
+toDoList.addEventListener("click", onListClick);
+
+standardTheme.addEventListener("click", () => changeTheme("standard"));
+lightTheme.addEventListener("click", () => changeTheme("light"));
+darkerTheme.addEventListener("click", () => changeTheme("darker"));
+
+filtersEl.addEventListener("click", e => {
+    const btn = e.target.closest("[data-filter]");
+    if (!btn) return;
+    currentFilter = btn.dataset.filter;
+    highlightActiveFilter();
+    renderTodos();
+});
+
+// =====================================================
+// HANDLE DELETE / COMPLETE / EDIT / REMINDER
+// =====================================================
+async function onListClick(e) {
+    const target = e.target;
+    const wrapper = target.closest('.todo');
+    if (!wrapper) return;
+
+    const id = wrapper.dataset.id;
+    const todo = todos.find(t => String(t.id) === id);
+
+    // ✅ DELETE
+    if (target.closest('.delete-btn')) {
+        wrapper.classList.add("fall");
+        wrapper.addEventListener("transitionend", async () => {
+            await deleteTodoBackend(id);
+            todos = todos.filter(t => t.id !== Number(id));
+            renderTodos();
+        }, { once: true });
+        return;
+    }
+
+    // ✅ COMPLETE
+    if (target.closest('.check-btn')) {
+        await toggleCompleteBackend(id);
+        todo.completed = !todo.completed;
+        renderTodos();
+        return;
+    }
+
+    // ✅ EDIT
+    if (target.closest('.edit-btn')) {
+        const updated = prompt("Edit your task:", todo.text);
+        if (updated && updated.trim().length > 0) {
+            await editTodoBackend(id, updated.trim());
+            todo.text = updated.trim();
+            renderTodos();
+        }
+        return;
+    }
+
+    // ✅ REMINDER
+    if (target.closest('.remind-btn')) {
+        const mins = parseInt(prompt("Remind in how many minutes?"), 10);
+        if (!isNaN(mins) && mins > 0) {
+            todo.reminderAt = new Date(Date.now() + mins * 60000).toISOString();
+            scheduleReminder(todo);
+            alert("Reminder set!");
+        }
+        return;
+    }
+}
+
+// =====================================================
+// REMINDER SCHEDULER
+// =====================================================
+function scheduleReminder(todo) {
+    if (!todo.reminderAt) return;
+    const ms = new Date(todo.reminderAt) - Date.now();
+    if (ms <= 0) return;
+
+    setTimeout(() => {
+        if (Notification.permission === "granted") {
+            new Notification("Task Reminder", { body: todo.text });
+        } else {
+            alert("Reminder: " + todo.text);
+        }
+
+        todo.reminderAt = null;
+    }, ms);
+}
+
+// =====================================================
+// FILTER
+// =====================================================
+function applyFilter(arr) {
+    if (currentFilter === "completed") return arr.filter(t => t.completed);
+    if (currentFilter === "pending") return arr.filter(t => !t.completed);
+    return arr;
+}
+
+function highlightActiveFilter() {
+    [...filtersEl.children].forEach(btn => {
+        btn.classList.toggle("active-filter", btn.dataset.filter === currentFilter);
+    });
+}
+
+// =====================================================
+// RENDER
+// =====================================================
+function renderTodos() {
+    toDoList.innerHTML = "";
+
+    const filtered = applyFilter(todos);
+
+    filtered.forEach(todo => {
+        const div = document.createElement("div");
+        div.className = `todo ${savedTheme}-todo ${todo.completed ? "completed" : ""}`;
+        div.dataset.id = todo.id;
+
+        div.innerHTML = `
+            <li class="todo-item">${todo.text}</li>
+
+            <span class="category-tag category-${todo.category}">
+                ${capitalize(todo.category)}
+            </span>
+
+            <button class="check-btn ${savedTheme}-button">
+                <i class="fas fa-check"></i>
+            </button>
+
+            <button class="edit-btn ${savedTheme}-button">
+                <i class="fas fa-edit"></i>
+            </button>
+
+            <button class="remind-btn ${savedTheme}-button">
+                <i class="fas fa-bell"></i>
+            </button>
+
+            <button class="delete-btn ${savedTheme}-button">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+
+        toDoList.appendChild(div);
+    });
+
+    applyThemeClassesToDom();
+}
+
+// =====================================================
+// THEME
+// =====================================================
 function changeTheme(color) {
-    localStorage.setItem('savedTheme', color);
-    savedTheme = localStorage.getItem('savedTheme');
-
+    savedTheme = color;
+    localStorage.setItem("savedTheme", color);
     document.body.className = color;
-    // Change blinking cursor for darker theme:
-    color === 'darker' ? 
-        document.getElementById('title').classList.add('darker-title')
-        : document.getElementById('title').classList.remove('darker-title');
 
-    document.querySelector('input').className = `${color}-input`;
-    // Change todo color without changing their status (completed or not):
-    document.querySelectorAll('.todo').forEach(todo => {
-        Array.from(todo.classList).some(item => item === 'completed') ? 
-            todo.className = `todo ${color}-todo completed`
-            : todo.className = `todo ${color}-todo`;
+    const input = document.querySelector(".todo-input");
+    if (input) input.className = `todo-input ${color}-input`;
+
+    applyThemeClassesToDom();
+}
+
+function applyThemeClassesToDom() {
+    document.querySelectorAll(".todo").forEach(t => {
+        const completed = t.classList.contains("completed");
+        t.className = `todo ${savedTheme}-todo ${completed ? "completed" : ""}`;
     });
-    // Change buttons color according to their type (todo, check or delete):
-    document.querySelectorAll('button').forEach(button => {
-        Array.from(button.classList).some(item => {
-            if (item === 'check-btn') {
-              button.className = `check-btn ${color}-button`;  
-            } else if (item === 'delete-btn') {
-                button.className = `delete-btn ${color}-button`; 
-            } else if (item === 'todo-btn') {
-                button.className = `todo-btn ${color}-button`;
-            }
-        });
+
+    document.querySelectorAll("button").forEach(btn => {
+        if (btn.classList.contains("check-btn")) btn.className = `check-btn ${savedTheme}-button`;
+        if (btn.classList.contains("edit-btn")) btn.className = `edit-btn ${savedTheme}-button`;
+        if (btn.classList.contains("remind-btn")) btn.className = `remind-btn ${savedTheme}-button`;
+        if (btn.classList.contains("delete-btn")) btn.className = `delete-btn ${savedTheme}-button`;
+        if (btn.classList.contains("todo-btn")) btn.className = `todo-btn ${savedTheme}-button`;
     });
+}
+
+// =====================================================
+// UTIL
+// =====================================================
+function capitalize(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
 }
