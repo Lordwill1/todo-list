@@ -1,11 +1,6 @@
-// =====================================================
-// BACKEND API URL
-// =====================================================
-const API_URL = "http://localhost:4000";
-
-// =====================================================
+// =========================
 // SELECTORS
-// =====================================================
+// =========================
 const toDoInput = document.querySelector('.todo-input');
 const toDoBtn = document.querySelector('.todo-btn');
 const toDoList = document.querySelector('.todo-list');
@@ -14,277 +9,328 @@ const standardTheme = document.querySelector('.standard-theme');
 const lightTheme = document.querySelector('.light-theme');
 const darkerTheme = document.querySelector('.darker-theme');
 
-const categorySelect = document.getElementById('task-category');
-const filtersEl = document.getElementById('filters');
+const categorySelect = document.getElementById('task-category'); // category dropdown
+const searchBar = document.getElementById('search-bar');         // search bar
+const filtersEl = document.getElementById('filters');            // filter buttons wrapper
 
+// =========================
+// STATE
+// =========================
 let savedTheme = localStorage.getItem('savedTheme') || 'standard';
-let todos = [];
+
+let todos = loadTodos();
+
 let currentFilter = 'all';
 
-// =====================================================
-// INIT
-// =====================================================
+
+// =========================
+// INITIALIZATION
+// =========================
+
 document.addEventListener("DOMContentLoaded", () => {
     changeTheme(savedTheme);
-    fetchTodos();
+    renderTodos();
+    highlightActiveFilter();
 });
 
-// Ask browser notification permission for reminders
-if ("Notification" in window) {
-    Notification.requestPermission().catch(()=>{});
-}
 
-// =====================================================
-// BACKEND FUNCTIONS
-// =====================================================
+// =========================
+// EVENT LISTENERS
+// =========================
+toDoBtn.addEventListener('click', addToDo);
+toDoList.addEventListener('click', onListClick);
 
-// ✅ Fetch all todos from backend
-async function fetchTodos() {
-    const res = await fetch(`${API_URL}/todos`);
-    todos = await res.json();
-    renderTodos();
+standardTheme.addEventListener('click', () => changeTheme('standard'));
+lightTheme.addEventListener('click', () => changeTheme('light'));
+darkerTheme.addEventListener('click', () => changeTheme('darker'));
 
-    // schedule reminders again
-    todos.forEach(scheduleReminder);
-}
+if (filtersEl) {
+    filtersEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-filter]');
+        if (!btn) return;
 
-// ✅ Add todo to backend
-async function addTodoBackend(text, category) {
-    const res = await fetch(`${API_URL}/todos`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            text,
-            category
-        })
-    });
-    return await res.json();
-}
-
-// ✅ Delete todo from backend
-async function deleteTodoBackend(id) {
-    await fetch(`${API_URL}/todos/${id}`, {
-        method: "DELETE"
+        currentFilter = btn.dataset.filter;
+        renderTodos();
+        highlightActiveFilter();
     });
 }
 
-// ✅ Toggle complete
-async function toggleCompleteBackend(id) {
-    await fetch(`${API_URL}/todos/${id}/complete`, {
-        method: "PUT"
+if (searchBar) {
+    searchBar.addEventListener('input', () => {
+        const term = searchBar.value.toLowerCase();
+        const filtered = todos.filter(t => t.text.toLowerCase().includes(term));
+        renderFiltered(filtered);
     });
 }
 
-// ✅ Edit todo
-async function editTodoBackend(id, newText) {
-    await fetch(`${API_URL}/todos/${id}`, {
-        method: "PUT",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ text: newText })
-    });
+
+
+// =========================
+// STORAGE HELPERS
+// =========================
+function loadTodos() {
+    const raw = localStorage.getItem('todos');
+    if (!raw) return [];
+
+    try {
+        const parsed = JSON.parse(raw);
+        return parsed.map(t => ({
+            id: t.id ?? Date.now() + Math.random(),
+            text: t.text ?? '',
+            completed: !!t.completed,
+            category: t.category || 'general'
+        }));
+    } catch {
+        return [];
+    }
 }
 
-// =====================================================
+function saveTodos() {
+    localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+
+
+// =========================
 // ADD TODO
-// =====================================================
-async function addToDo(e) {
+// =========================
+function addToDo(e) {
     e.preventDefault();
 
     const text = toDoInput.value.trim();
-    const category = categorySelect.value;
+    const category = categorySelect ? categorySelect.value : 'general';
 
     if (!text) {
         alert("You must write something!");
         return;
     }
 
-    const newTodo = await addTodoBackend(text, category);
-    todos.push(newTodo);
+    const newTask = {
+        id: Date.now(),
+        text,
+        completed: false,
+        category
+    };
 
-    toDoInput.value = "";
+    todos.push(newTask);
+    saveTodos();
+
+    toDoInput.value = '';
     renderTodos();
 }
 
-// =====================================================
-// CLICK HANDLERS
-// =====================================================
-toDoBtn.addEventListener("click", addToDo);
-toDoList.addEventListener("click", onListClick);
 
-standardTheme.addEventListener("click", () => changeTheme("standard"));
-lightTheme.addEventListener("click", () => changeTheme("light"));
-darkerTheme.addEventListener("click", () => changeTheme("darker"));
 
-filtersEl.addEventListener("click", e => {
-    const btn = e.target.closest("[data-filter]");
-    if (!btn) return;
-    currentFilter = btn.dataset.filter;
-    highlightActiveFilter();
-    renderTodos();
-});
-
-// =====================================================
-// HANDLE DELETE / COMPLETE / EDIT / REMINDER
-// =====================================================
-async function onListClick(e) {
+// =========================
+// LIST CLICK HANDLER
+// =========================
+function onListClick(e) {
     const target = e.target;
-    const wrapper = target.closest('.todo');
-    if (!wrapper) return;
 
-    const id = wrapper.dataset.id;
-    const todo = todos.find(t => String(t.id) === id);
+    // DELETE
+    if (target.classList.contains('delete-btn')) {
+        const wrapper = target.closest('.todo');
+        const id = wrapper.dataset.id;
 
-    // ✅ DELETE
-    if (target.closest('.delete-btn')) {
-        wrapper.classList.add("fall");
-        wrapper.addEventListener("transitionend", async () => {
-            await deleteTodoBackend(id);
-            todos = todos.filter(t => t.id !== Number(id));
+        wrapper.classList.add('fall');
+
+        wrapper.addEventListener('transitionend', () => {
+            todos = todos.filter(t => String(t.id) !== String(id));
+            saveTodos();
             renderTodos();
         }, { once: true });
+
         return;
     }
 
-    // ✅ COMPLETE
-    if (target.closest('.check-btn')) {
-        await toggleCompleteBackend(id);
-        todo.completed = !todo.completed;
-        renderTodos();
-        return;
-    }
+    // COMPLETE
+    if (target.classList.contains('check-btn')) {
+        const wrapper = target.closest('.todo');
+        const id = wrapper.dataset.id;
+        const t = todos.find(x => String(x.id) === id);
 
-    // ✅ EDIT
-    if (target.closest('.edit-btn')) {
-        const updated = prompt("Edit your task:", todo.text);
-        if (updated && updated.trim().length > 0) {
-            await editTodoBackend(id, updated.trim());
-            todo.text = updated.trim();
+        if (t) {
+            t.completed = !t.completed;
+            saveTodos();
             renderTodos();
         }
         return;
     }
 
-    // ✅ REMINDER
-    if (target.closest('.remind-btn')) {
-        const mins = parseInt(prompt("Remind in how many minutes?"), 10);
-        if (!isNaN(mins) && mins > 0) {
-            todo.reminderAt = new Date(Date.now() + mins * 60000).toISOString();
-            scheduleReminder(todo);
-            alert("Reminder set!");
-        }
-        return;
+    // EDIT ✏️
+    if (target.classList.contains('edit-btn')) {
+        const wrapper = target.closest('.todo');
+        const id = wrapper.dataset.id;
+        const t = todos.find(x => String(x.id) === id);
+
+        if (!t) return;
+
+        const li = wrapper.querySelector('.todo-item');
+
+        const input = document.createElement('input');
+        input.value = t.text;
+        input.className = 'edit-input';
+
+        wrapper.classList.add('editing');
+        li.replaceWith(input);
+        input.focus();
+
+        const finish = () => {
+            t.text = input.value.trim() || t.text;
+            wrapper.classList.remove('editing');
+            saveTodos();
+            renderTodos();
+        };
+
+        input.addEventListener('blur', finish);
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') finish();
+        });
     }
 }
 
-// =====================================================
-// REMINDER SCHEDULER
-// =====================================================
-function scheduleReminder(todo) {
-    if (!todo.reminderAt) return;
-    const ms = new Date(todo.reminderAt) - Date.now();
-    if (ms <= 0) return;
 
-    setTimeout(() => {
-        if (Notification.permission === "granted") {
-            new Notification("Task Reminder", { body: todo.text });
-        } else {
-            alert("Reminder: " + todo.text);
-        }
 
-        todo.reminderAt = null;
-    }, ms);
-}
-
-// =====================================================
-// FILTER
-// =====================================================
-function applyFilter(arr) {
-    if (currentFilter === "completed") return arr.filter(t => t.completed);
-    if (currentFilter === "pending") return arr.filter(t => !t.completed);
-    return arr;
-}
-
-function highlightActiveFilter() {
-    [...filtersEl.children].forEach(btn => {
-        btn.classList.toggle("active-filter", btn.dataset.filter === currentFilter);
-    });
-}
-
-// =====================================================
-// RENDER
-// =====================================================
+// =========================
+// RENDERING
+// =========================
 function renderTodos() {
-    toDoList.innerHTML = "";
+    toDoList.innerHTML = '';
 
     const filtered = applyFilter(todos);
 
     filtered.forEach(todo => {
-        const div = document.createElement("div");
-        div.className = `todo ${savedTheme}-todo ${todo.completed ? "completed" : ""}`;
-        div.dataset.id = todo.id;
-
-        div.innerHTML = `
-            <li class="todo-item">${todo.text}</li>
-
-            <span class="category-tag category-${todo.category}">
-                ${capitalize(todo.category)}
-            </span>
-
-            <button class="check-btn ${savedTheme}-button">
-                <i class="fas fa-check"></i>
-            </button>
-
-            <button class="edit-btn ${savedTheme}-button">
-                <i class="fas fa-edit"></i>
-            </button>
-
-            <button class="remind-btn ${savedTheme}-button">
-                <i class="fas fa-bell"></i>
-            </button>
-
-            <button class="delete-btn ${savedTheme}-button">
-                <i class="fas fa-trash"></i>
-            </button>
-        `;
-
-        toDoList.appendChild(div);
+        const el = createTodoElement(todo);
+        toDoList.appendChild(el);
     });
 
     applyThemeClassesToDom();
 }
 
-// =====================================================
-// THEME
-// =====================================================
-function changeTheme(color) {
-    savedTheme = color;
-    localStorage.setItem("savedTheme", color);
-    document.body.className = color;
+function renderFiltered(list) {
+    toDoList.innerHTML = '';
 
-    const input = document.querySelector(".todo-input");
-    if (input) input.className = `todo-input ${color}-input`;
+    list.forEach(t => {
+        toDoList.appendChild(createTodoElement(t));
+    });
 
     applyThemeClassesToDom();
+}
+
+
+
+// CREATE ONE TODO ELEMENT
+function createTodoElement(todo) {
+    const wrapper = document.createElement('div');
+    wrapper.className = `todo ${savedTheme}-todo${todo.completed ? ' completed' : ''}`;
+    wrapper.dataset.id = todo.id;
+
+    const li = document.createElement('li');
+    li.className = 'todo-item';
+    li.textContent = todo.text;
+
+    const tag = document.createElement('span');
+    tag.className = `category-tag category-${todo.category}`;
+    tag.textContent = capitalize(todo.category);
+
+    const checkBtn = document.createElement('button');
+    checkBtn.className = `check-btn ${savedTheme}-button`;
+    checkBtn.innerHTML = '<i class="fas fa-check"></i>';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = `edit-btn ${savedTheme}-button`;
+    editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+
+    const delBtn = document.createElement('button');
+    delBtn.className = `delete-btn ${savedTheme}-button`;
+    delBtn.innerHTML = '<i class="fas fa-trash"></i>';
+
+    wrapper.appendChild(li);
+    wrapper.appendChild(tag);
+    wrapper.appendChild(checkBtn);
+    wrapper.appendChild(editBtn);
+    wrapper.appendChild(delBtn);
+
+    return wrapper;
+}
+
+
+
+// =========================
+// FILTERS
+// =========================
+function applyFilter(arr) {
+    if (currentFilter === 'completed') return arr.filter(t => t.completed);
+    if (currentFilter === 'pending') return arr.filter(t => !t.completed);
+    return arr;
+}
+
+function highlightActiveFilter() {
+    if (!filtersEl) return;
+
+    [...filtersEl.querySelectorAll('[data-filter]')].forEach(btn => {
+        btn.classList.toggle('active-filter', btn.dataset.filter === currentFilter);
+    });
+}
+
+
+
+// =========================
+// THEME
+// =========================
+function changeTheme(color) {
+    localStorage.setItem('savedTheme', color);
+    savedTheme = color;
+
+    document.body.className = color;
+
+    const titleEl = document.getElementById('title');
+    if (titleEl) {
+        if (color === 'darker') titleEl.classList.add('darker-title');
+        else titleEl.classList.remove('darker-title');
+    }
+
+    const inputEl = document.querySelector('.todo-input');
+    if (inputEl) inputEl.className = `todo-input ${color}-input`;
+
+    document.querySelectorAll('button').forEach(button => {
+        if (button.classList.contains('check-btn'))
+            button.className = `check-btn ${color}-button`;
+        else if (button.classList.contains('delete-btn'))
+            button.className = `delete-btn ${color}-button`;
+        else if (button.classList.contains('edit-btn'))
+            button.className = `edit-btn ${color}-button`;
+        else if (button.classList.contains('todo-btn'))
+            button.className = `todo-btn ${color}-button`;
+    });
+
+    document.querySelectorAll('.todo').forEach(todo => {
+        const isCompleted = todo.classList.contains('completed');
+        todo.className = `todo ${color}-todo${isCompleted ? ' completed' : ''}`;
+    });
 }
 
 function applyThemeClassesToDom() {
-    document.querySelectorAll(".todo").forEach(t => {
-        const completed = t.classList.contains("completed");
-        t.className = `todo ${savedTheme}-todo ${completed ? "completed" : ""}`;
-    });
-
-    document.querySelectorAll("button").forEach(btn => {
-        if (btn.classList.contains("check-btn")) btn.className = `check-btn ${savedTheme}-button`;
-        if (btn.classList.contains("edit-btn")) btn.className = `edit-btn ${savedTheme}-button`;
-        if (btn.classList.contains("remind-btn")) btn.className = `remind-btn ${savedTheme}-button`;
-        if (btn.classList.contains("delete-btn")) btn.className = `delete-btn ${savedTheme}-button`;
-        if (btn.classList.contains("todo-btn")) btn.className = `todo-btn ${savedTheme}-button`;
+    document.querySelectorAll('.check-btn').forEach(b =>
+        b.className = `check-btn ${savedTheme}-button`
+    );
+    document.querySelectorAll('.delete-btn').forEach(b =>
+        b.className = `delete-btn ${savedTheme}-button`
+    );
+    document.querySelectorAll('.edit-btn').forEach(b =>
+        b.className = `edit-btn ${savedTheme}-button`
+    );
+    document.querySelectorAll('.todo').forEach(t => {
+        const isCompleted = t.classList.contains('completed');
+        t.className = `todo ${savedTheme}-todo${isCompleted ? ' completed' : ''}`;
     });
 }
 
-// =====================================================
-// UTIL
-// =====================================================
+
+
+// =========================
+// UTILITIES
+// =========================
 function capitalize(s) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 }

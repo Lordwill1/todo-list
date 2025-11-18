@@ -3,66 +3,48 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>To-Do List App</title>
+    <title>Todo List</title>
 
-    <link rel="stylesheet" href="CSS/main.css"/>
-    <link rel="stylesheet" href="CSS/corner.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
 </head>
 
 <body class="standard">
-    <!-- GitHub corner (optional) -->
-  <a href="https://github.com/anushkagaur2904/todo" class="github-corner" aria-label="View source on GitHub" title="View source on GitHub">
-    <svg width="80" height="80" viewBox="0 0 250 250"
-         style="position: absolute; top: 0; right: 0; border: 0; fill:#151513; color:#fff;"
-         aria-hidden="true">
-      <path d="M0 0l115 115h15l12 27 108 108V0z"></path>
-      <path class="octo-arm"
-            d="M128 109c-15-9-9-19-9-19 3-7 1-11 1-11-2-7 3-2 3-2 4 5 2 11 2 11-3 10 5 15 9 16"
-            fill="currentColor"></path>
-      <path class="octo-body"
-            d="M115 115c-4 2-8 3-12 3-10 0-19-6-22-15-6-13 2-28 16-31 12-3 24 6 24 18 0 4-1 8-3 11l1 1z"
-            fill="currentColor"></path>
-    </svg>
-  </a>
 
     <div id="header">
         <h1 id="title">TO-DO LIST</h1>
 
+        <!-- Theme Buttons -->
         <div class="flexrow-container">
             <div class="theme-selector standard-theme"></div>
             <div class="theme-selector light-theme"></div>
             <div class="theme-selector darker-theme"></div>
         </div>
-
-        <p id="datetime"></p>
     </div>
 
+    <!-- Live DateTime -->
+    <div id="datetime"></div>
+
+    <!-- Search Bar Feature -->
+    <input id="search-bar" class="standard-input" placeholder="Search tasks...">
+
+    <!-- Form -->
     <form id="form">
         <input type="text" class="todo-input standard-input" placeholder="Add a task..." />
-
-        <select id="task-category">
-            <option value="general">General</option>
-            <option value="work">Work</option>
-            <option value="personal">Personal</option>
-            <option value="study">Study</option>
-        </select>
-
         <button class="todo-btn standard-button">Add</button>
     </form>
 
+    <!-- Filters (optional but part of UI) -->
     <div id="filters">
         <button class="filter-btn standard-button" data-filter="all">All</button>
         <button class="filter-btn standard-button" data-filter="pending">Pending</button>
         <button class="filter-btn standard-button" data-filter="completed">Completed</button>
     </div>
 
-    <div id="myUnOrdList">
-        <ul class="todo-list"></ul>
-    </div>
+    <!-- Todo List -->
+    <ul class="todo-list" id="myUnOrdList"></ul>
 
-    <script src="JS/main.js"></script>
     <script src="JS/time.js"></script>
-
+    <script src="JS/main.js"></script>
 </body>
 </html>
