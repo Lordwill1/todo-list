@@ -78,6 +78,13 @@ function handleMarkTodayDone() {
 
     saveStreak(newCount, today);
     updateStreakUI();
+    // 🎉 Confetti celebration
+    confetti({
+    particleCount: 120,
+    spread: 70,
+    origin: { y: 0.6 }
+});
+
     alert("Streak updated! 🎉");
 }
 

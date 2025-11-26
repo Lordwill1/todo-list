@@ -410,3 +410,10 @@ form button {
   cursor: pointer;
 }
 
+/* Allow page to scroll normally */
+html, body {
+    height: auto !important;
+    overflow-y: auto !important;
+}
+
+
