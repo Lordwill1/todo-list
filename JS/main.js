@@ -7,12 +7,96 @@ const standardTheme = document.querySelector('.standard-theme');
 const lightTheme = document.querySelector('.light-theme');
 const darkerTheme = document.querySelector('.darker-theme');
 
+// ========== STATS + STREAK FEATURE ==========
+
+// Format today's date (YYYY-MM-DD)
+function getTodayKey() {
+    const d = new Date();
+    return d.toISOString().split("T")[0];
+}
+
+// ---------- TASK STATS ----------
+function calculateTaskStats() {
+    const items = Array.from(toDoList.querySelectorAll(".todo"));
+    const total = items.length;
+
+    let completed = 0;
+    items.forEach(item => {
+        if (item.classList.contains("completed")) completed++;
+    });
+
+    return {
+        total,
+        completed,
+        pending: total - completed
+    };
+}
+
+function updateTaskStatsUI() {
+    const { total, completed, pending } = calculateTaskStats();
+    document.getElementById("stats-total").textContent = total;
+    document.getElementById("stats-completed").textContent = completed;
+    document.getElementById("stats-pending").textContent = pending;
+}
+
+// ---------- STREAK SYSTEM ----------
+const STREAK_COUNT_KEY = "todo_streak_count";
+const STREAK_LAST_DONE_KEY = "todo_streak_last_done";
+
+function loadStreak() {
+    return {
+        count: Number(localStorage.getItem(STREAK_COUNT_KEY)) || 0,
+        last: localStorage.getItem(STREAK_LAST_DONE_KEY)
+    };
+}
+
+function saveStreak(count, lastDate) {
+    localStorage.setItem(STREAK_COUNT_KEY, count);
+    localStorage.setItem(STREAK_LAST_DONE_KEY, lastDate);
+}
+
+function updateStreakUI() {
+    const { count } = loadStreak();
+    document.getElementById("streak-count").textContent = count;
+}
+
+function handleMarkTodayDone() {
+    const today = getTodayKey();
+    const { count, last } = loadStreak();
+
+    if (last === today) {
+        alert("Today's streak is already counted! 🔥");
+        return;
+    }
+
+    let newCount = 1;
+
+    if (last) {
+        const diff = (new Date(today) - new Date(last)) / (1000 * 60 * 60 * 24);
+        newCount = diff === 1 ? count + 1 : 1;
+    }
+
+    saveStreak(newCount, today);
+    updateStreakUI();
+    alert("Streak updated! 🎉");
+}
+
+function initStreakFeature() {
+    const btn = document.getElementById("streak-done-btn");
+    if (btn) btn.addEventListener("click", handleMarkTodayDone);
+    updateStreakUI();
+}
+
+
 
 // Event Listeners
 
 toDoBtn.addEventListener('click', addToDo);
 toDoList.addEventListener('click', deletecheck);
 document.addEventListener("DOMContentLoaded", getTodos);
+document.addEventListener("DOMContentLoaded", updateTaskStatsUI);
+document.addEventListener("DOMContentLoaded", initStreakFeature);
+
 standardTheme.addEventListener('click', () => changeTheme('standard'));
 lightTheme.addEventListener('click', () => changeTheme('light'));
 darkerTheme.addEventListener('click', () => changeTheme('darker'));
@@ -59,6 +143,7 @@ function addToDo(event) {
 
         // Append to list;
         toDoList.appendChild(toDoDiv);
+        updateTaskStatsUI();
 
         // CLearing the input;
         toDoInput.value = '';
@@ -83,14 +168,18 @@ function deletecheck(event){
         removeLocalTodos(item.parentElement);
 
         item.parentElement.addEventListener('transitionend', function(){
-            item.parentElement.remove();
-        })
+    item.parentElement.remove();
+    updateTaskStatsUI();
+})
+
     }
 
     // check
     if(item.classList[0] === 'check-btn')
     {
         item.parentElement.classList.toggle("completed");
+        updateTaskStatsUI();
+
     }
 
 
@@ -149,6 +238,7 @@ function getTodos() {
 
         // Append to list;
         toDoList.appendChild(toDoDiv);
+        updateTaskStatsUI();
     });
 }
 
