@@ -7,66 +7,7 @@ const standardTheme = document.querySelector(".standard-theme");
 const lightTheme = document.querySelector(".light-theme");
 const darkerTheme = document.querySelector(".darker-theme");
 
-// ================== STATS + STREAK ==================
-
-// Format today's date (YYYY-MM-DD)
-function getTodayKey() {
-    return new Date().toISOString().split("T")[0];
-}
-
-// ---------- TASK STATS ----------
-function calculateTaskStats() {
-    const items = Array.from(toDoList.querySelectorAll(".todo"));
-    const total = items.length;
-    let completed = items.filter(item => item.classList.contains("completed")).length;
-
-    return { total, completed, pending: total - completed };
-}
-
-function updateTaskStatsUI() {
-    const { total, completed, pending } = calculateTaskStats();
-    document.getElementById("stats-total").textContent = total;
-    document.getElementById("stats-completed").textContent = completed;
-    document.getElementById("stats-pending").textContent = pending;
-}
-
-
-// ---------- STREAK SYSTEM ----------
-const STREAK_COUNT_KEY = "todo_streak_count";
-const STREAK_LAST_DONE_KEY = "todo_streak_last_done";
-
-function loadStreak() {
-    return {
-        count: Number(localStorage.getItem(STREAK_COUNT_KEY)) || 0,
-        last: localStorage.getItem(STREAK_LAST_DONE_KEY)
-    };
-}
-
-function saveStreak(count, lastDate) {
-    localStorage.setItem(STREAK_COUNT_KEY, count);
-    localStorage.setItem(STREAK_LAST_DONE_KEY, lastDate);
-}
-
-function updateStreakUI() {
-    const { count } = loadStreak();
-    document.getElementById("streak-count").textContent = count;
-}
-
-function handleMarkTodayDone() {
-    const today = getTodayKey();
-    const { count, last } = loadStreak();
-
-    if (last === today) {
-        alert("Today's streak is already counted! 🔥");
-        return;
-    }
-
-    let newCount = 1;
-
-    if (last) {
-        const diff = (new Date(today) - new Date(last)) / (1000 * 60 * 60 * 24);
-        newCount = diff === 1 ? count + 1 : 1;
-    }
+// Event Listeners
 
 toDoBtn.addEventListener("click", addToDo);
 toDoList.addEventListener("click", deletecheck);
@@ -81,8 +22,7 @@ savedTheme === null
   ? changeTheme("standard")
   : changeTheme(localStorage.getItem("savedTheme"));
 
-
-// ================== TODO FUNCTIONS ==================
+// Functions;
 function addToDo(event) {
   event.preventDefault();
   const todoText = toDoInput.value.trim();
