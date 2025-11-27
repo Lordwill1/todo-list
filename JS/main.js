@@ -22,7 +22,7 @@ savedTheme === null
   ? changeTheme("standard")
   : changeTheme(localStorage.getItem("savedTheme"));
 
-// Functions
+// Functions;
 function addToDo(event) {
   event.preventDefault();
   const todoText = toDoInput.value.trim();
