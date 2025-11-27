@@ -7,7 +7,6 @@ const standardTheme = document.querySelector(".standard-theme");
 const lightTheme = document.querySelector(".light-theme");
 const darkerTheme = document.querySelector(".darker-theme");
 
-// Event Listeners
 
 toDoBtn.addEventListener("click", addToDo);
 toDoList.addEventListener("click", deletecheck);
@@ -144,4 +143,13 @@ function changeTheme(color) {
       }
     });
   });
+}
+
+
+
+// =========================
+// UTILITIES
+// =========================
+function capitalize(s) {
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
 }
