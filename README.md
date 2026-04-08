@@ -38,7 +38,7 @@
 
 # *Contributions*
 
-- All contributors are most welcome! This is definitely open source!
+- All contributors are most welcome! This is definitely open source! 
 
 ## *WEBSITE DEMO*
 ![Screenshot (771)](https://user-images.githubusercontent.com/61280281/99399713-0844b900-290c-11eb-8d7c-1199319b4a9e.png)
